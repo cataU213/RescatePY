@@ -1,0 +1,2659 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Permite que la página sea responsive. -->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>RescatePY</title>
+
+    <!-- Tipografía moderna. -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Estilos propios. -->
+    <link
+        rel="stylesheet"
+        href="styles.css">
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         BARRA SUPERIOR
+    ====================================================== -->
+
+    <header class="topbar">
+
+    <!-- Menú izquierdo -->
+    <div class="menu-ods-contenedor">
+
+        <button
+            id="odsMenuBtn"
+            class="ods-menu-btn"
+            type="button">
+
+            <span class="hamburguesa">☰</span>
+            <span>ODS</span>
+
+        </button>
+
+        <div
+            id="odsDropdown"
+            class="ods-dropdown">
+
+            <button
+                id="abrirDonacionBtn"
+                type="button">
+
+                <span class="menu-icono">♡</span>
+                Quiero donar
+
+            </button>
+
+
+            <button
+                id="abrirDisponiblesBtn"
+                type="button">
+
+                <span class="menu-icono">◉</span>
+                Alimentos disponibles
+
+            </button>
+
+
+            <button
+                id="abrirAyudarBtn"
+                type="button">
+
+                <span class="menu-icono">♥</span>
+                Quiero ayudar
+
+            </button>
+
+
+            <button
+                id="abrirAyudaCercaBtn"
+                type="button">
+
+                <span class="menu-icono">⌖</span>
+                Tu ayuda cerca
+
+            </button>
+
+
+            <button
+                id="abrirManosSumanBtn"
+                type="button">
+
+                <span class="menu-icono">✦</span>
+                Manos que suman
+
+            </button>
+
+
+            <button
+                id="abrirEcoValorBtn"
+                type="button">
+
+                <span class="menu-icono">♻</span>
+                EcoValor
+
+            </button>
+
+
+            <button
+                id="abrirOdsImpactoBtn"
+                type="button">
+
+                <span class="menu-icono">🌍</span>
+                Impacto ODS
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Acciones derechas -->
+    <div class="topbar-acciones">
+
+        <!-- Sesión del usuario -->
+        <button id="authButton" class="boton-cuenta" type="button">
+            Iniciar sesión
+        </button>
+
+        <button id="notificationButton" class="boton-notificacion campo-oculto" type="button">
+            🔔 <span id="notificationCount"></span>
+        </button>
+
+        <button id="logoutButton" class="boton-salir campo-oculto" type="button">
+            Salir
+        </button>
+
+        <button
+            id="abrirEquipoBtn"
+            class="boton-equipo"
+            type="button">
+
+            Conocé al equipo
+
+        </button>
+
+        <button
+            id="themeToggle"
+            class="boton-tema"
+            type="button">
+
+            ☾
+
+        </button>
+
+    </div>
+
+</header>
+
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
+
+    <main class="contenido-principal">
+
+
+        <!-- =================================================
+             IMAGEN PRINCIPAL
+        ================================================== -->
+
+        <section class="imagen-principal">
+
+            <!--
+                Se fuerza object-fit: contain para que la imagen
+                se vea completa y no quede recortada.
+            -->
+            <img
+                src="img/IMA23.png"
+                alt="Imagen principal de RescatePY"
+                style="
+                    width: 100%;
+                    height: auto;
+                    max-height: 520px;
+                    object-fit: contain;
+                    object-position: center;
+                    display: block;
+                    margin: 0 auto;
+                    background: #e8ecea;
+                ">
+
+        </section>
+
+
+
+        <!-- =================================================
+             TRES BOTONES PRINCIPALES
+        ================================================== -->
+
+        <section class="acciones-principales">
+
+
+            <!-- RED INSTITUCIONAL -->
+            <button
+                class="boton-principal"
+                data-modal="modalInstitucional"
+                type="button">
+
+                Red institucional
+
+            </button>
+
+
+            <!-- AYUDA TERRITORIAL -->
+            <button
+                class="boton-principal"
+                data-modal="modalTerritorial"
+                type="button">
+
+                Ayuda territorial
+
+            </button>
+
+
+            <!-- INTELIGENCIA SOCIAL -->
+            <button
+                class="boton-principal"
+                data-modal="modalSocial"
+                type="button">
+
+                Inteligencia social
+
+            </button>
+
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         MODAL 1 - RED INSTITUCIONAL
+    ====================================================== -->
+
+    <div
+        id="modalInstitucional"
+        class="modal">
+
+        <div class="modal-fondo"></div>
+
+
+        <section class="modal-contenido">
+
+            <header class="modal-cabecera">
+
+                <h2>
+                    Red institucional
+                </h2>
+
+
+                <button
+                    class="cerrar-modal"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+            <!-- JavaScript carga aquí las instituciones. -->
+            <div
+                id="listaOrganizaciones"
+                class="lista-organizaciones">
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 2 - AYUDA TERRITORIAL
+    ====================================================== -->
+
+    <div
+        id="modalTerritorial"
+        class="modal">
+
+        <div class="modal-fondo"></div>
+
+
+        <section class="modal-contenido">
+
+            <header class="modal-cabecera">
+
+                <h2>
+                    Ayuda territorial
+                </h2>
+
+
+                <button
+                    class="cerrar-modal"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+            <!-- Buscador -->
+            <div class="buscador">
+
+                <input
+                    id="buscarComedor"
+                    type="text"
+                    placeholder="Buscar comedor o ciudad...">
+
+            </div>
+
+
+            <!-- JavaScript carga aquí los comedores. -->
+            <div
+                id="listaComedores"
+                class="lista-comedores">
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 3 - INTELIGENCIA SOCIAL
+         Reporte territorial de zonas con mayor necesidad.
+    ====================================================== -->
+
+    <div
+        id="modalSocial"
+        class="modal">
+
+        <div class="modal-fondo"></div>
+
+
+        <section class="modal-contenido modal-dashboard">
+
+            <header class="modal-cabecera">
+
+                <div>
+
+                    <span class="intel-panel-etiqueta">
+                        REPORTE TERRITORIAL
+                    </span>
+
+                    <h2>
+                        Inteligencia social
+                    </h2>
+
+                </div>
+
+
+                <button
+                    class="cerrar-modal"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+            <!-- =================================================
+                 REPORTE TERRITORIAL
+                 JavaScript cargará los datos dinámicamente.
+            ================================================== -->
+
+            <div class="intel-social-dashboard">
+
+
+                <!-- =============================================
+                     MÉTRICAS GENERALES
+                ============================================== -->
+
+                <div class="intel-metricas-grid">
+
+
+                    <!-- Total de donaciones -->
+                    <article class="intel-metrica-card">
+
+                        <span class="intel-metrica-label">
+                            Donaciones
+                        </span>
+
+                        <strong
+                            id="intelTotalDonaciones"
+                            class="intel-metrica-valor">
+
+                            0
+
+                        </strong>
+
+                        <small class="intel-metrica-ayuda">
+                            Ofertas registradas
+                        </small>
+
+                    </article>
+
+
+                    <!-- Total de solicitudes -->
+                    <article class="intel-metrica-card">
+
+                        <span class="intel-metrica-label">
+                            Solicitudes
+                        </span>
+
+                        <strong
+                            id="intelTotalSolicitudes"
+                            class="intel-metrica-valor">
+
+                            0
+
+                        </strong>
+
+                        <small class="intel-metrica-ayuda alerta">
+                            Demanda activa
+                        </small>
+
+                    </article>
+
+
+                    <!-- Cantidad de zonas -->
+                    <article class="intel-metrica-card">
+
+                        <span class="intel-metrica-label">
+                            Zonas
+                        </span>
+
+                        <strong
+                            id="intelTotalZonas"
+                            class="intel-metrica-valor">
+
+                            0
+
+                        </strong>
+
+                        <small class="intel-metrica-ayuda">
+                            Analizadas
+                        </small>
+
+                    </article>
+
+
+                    <!-- Déficit máximo -->
+                    <article class="intel-metrica-card">
+
+                        <span class="intel-metrica-label">
+                            Déficit máximo
+                        </span>
+
+                        <strong
+                            id="intelDeficitMaximo"
+                            class="intel-metrica-valor">
+
+                            0
+
+                        </strong>
+
+                        <small class="intel-metrica-ayuda advertencia">
+                            Solicitudes - donaciones
+                        </small>
+
+                    </article>
+
+
+                </div>
+
+
+
+                <!-- =============================================
+                     BALANCE Y ZONA PRIORITARIA
+                ============================================== -->
+
+                <div class="intel-paneles-grid">
+
+
+                    <!-- Balance territorial -->
+                    <section class="intel-panel intel-panel-balance">
+
+                        <div class="intel-panel-header">
+
+                            <span class="intel-panel-etiqueta">
+                                BALANCE TERRITORIAL
+                            </span>
+
+                            <h3>
+                                Donaciones vs. solicitudes
+                            </h3>
+
+                        </div>
+
+
+                        <!--
+                            JavaScript cargará aquí las barras
+                            comparativas de cada ciudad/zona.
+                        -->
+                        <div
+                            id="intelBalanceLista"
+                            class="intel-balance-lista">
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- Zona prioritaria -->
+                    <aside class="intel-panel intel-panel-prioridad">
+
+                        <div class="intel-panel-header">
+
+                            <span class="intel-panel-etiqueta">
+                                ANÁLISIS AUTOMÁTICO
+                            </span>
+
+                            <h3>
+                                Zona prioritaria
+                            </h3>
+
+                        </div>
+
+
+                        <div class="intel-zona-prioritaria-box">
+
+                            <small>
+                                Mayor necesidad detectada
+                            </small>
+
+
+                            <strong id="intelZonaPrioritaria">
+                                -
+                            </strong>
+
+
+                            <p
+                                id="intelZonaResumen"
+                                class="intel-zona-resumen">
+
+                                Sin datos para analizar.
+
+                            </p>
+
+                        </div>
+
+                    </aside>
+
+
+                </div>
+
+
+
+                <!-- =============================================
+                     DETALLE POR ZONA
+                ============================================== -->
+
+                <section class="intel-panel intel-panel-tabla">
+
+                    <div class="intel-panel-header">
+
+                        <span class="intel-panel-etiqueta">
+                            DETALLE POR ZONA
+                        </span>
+
+                        <h3>
+                            Resumen territorial
+                        </h3>
+
+                    </div>
+
+
+                    <div class="intel-tabla-wrap">
+
+                        <table class="intel-tabla">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Zona
+                                    </th>
+
+                                    <th>
+                                        Donaciones
+                                    </th>
+
+                                    <th>
+                                        Solicitudes
+                                    </th>
+
+                                    <th>
+                                        Balance
+                                    </th>
+
+                                    <th>
+                                        Estado
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <!--
+                                JavaScript carga aquí cada fila.
+                            -->
+                            <tbody id="intelTablaBody">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 4 - QUIERO DONAR
+    ====================================================== -->
+
+    <div
+        id="donationModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="donationBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        DONÁ CON CONFIANZA
+                    </span>
+
+                    <h2>
+                        Registrá tu donación
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarDonacionBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <form id="donationForm">
+
+
+                    <div class="donacion-grid">
+
+
+                        <!-- Tipo de donante -->
+                        <div class="campo-donacion">
+
+                            <label for="donorType">
+                                Tipo de donante
+                            </label>
+
+                            <select
+                                id="donorType"
+                                required>
+
+                                <option value="Empresa">
+                                    Empresa
+                                </option>
+
+                                <option value="Persona particular">
+                                    Persona particular
+                                </option>
+
+                                <option value="Productor">
+                                    Productor
+                                </option>
+
+                                <option value="Organización / ONG">
+                                    Organización / ONG
+                                </option>
+
+                                <option value="Institución">
+                                    Institución
+                                </option>
+
+                                <option value="Otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Nombre del donante -->
+                        <div class="campo-donacion">
+
+                            <label for="donorName">
+                                Nombre del donante
+                            </label>
+
+                            <input
+                                id="donorName"
+                                type="text"
+                                placeholder="Ej.: OCHI"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Alimento -->
+                        <div class="campo-donacion">
+
+                            <label for="foodName">
+                                Alimento
+                            </label>
+
+                            <input
+                                id="foodName"
+                                type="text"
+                                placeholder="Ej.: carne de cerdo"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Cantidad -->
+                        <div class="campo-donacion">
+
+                            <label for="foodQuantity">
+                                Cantidad
+                            </label>
+
+                            <input
+                                id="foodQuantity"
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="Ej.: 50"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Unidad -->
+                        <div class="campo-donacion">
+
+                            <label for="foodUnit">
+                                Unidad
+                            </label>
+
+                            <select
+                                id="foodUnit"
+                                required>
+
+                                <option value="kg">
+                                    Kilogramos
+                                </option>
+
+                                <option value="unidades">
+                                    Unidades
+                                </option>
+
+                                <option value="litros">
+                                    Litros
+                                </option>
+
+                                <option value="cajas">
+                                    Cajas
+                                </option>
+
+                                <option value="bolsas">
+                                    Bolsas
+                                </option>
+
+                                <option value="otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Ciudad -->
+                        <div class="campo-donacion">
+
+                            <label for="donationCity">
+                                Ciudad
+                            </label>
+
+                            <input
+                                id="donationCity"
+                                type="text"
+                                placeholder="Ej.: San Lorenzo"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Lugar de retiro -->
+                        <div class="campo-donacion">
+
+                            <label for="pickupAddress">
+                                Lugar de retiro
+                            </label>
+
+                            <input
+                                id="pickupAddress"
+                                type="text"
+                                placeholder="Dirección o punto de referencia"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Tipo de alimento -->
+                        <div class="campo-donacion">
+
+                            <label for="foodType">
+                                Tipo de alimento
+                            </label>
+
+                            <select
+                                id="foodType"
+                                required>
+
+                                <option value="fresh">
+                                    Fresco natural
+                                </option>
+
+                                <option value="dated">
+                                    Envasado / con fecha
+                                </option>
+
+                                <option value="prepared">
+                                    Comida preparada
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Fecha de vencimiento -->
+                        <div
+                            id="expiryGroup"
+                            class="campo-donacion campo-oculto">
+
+                            <label for="expiryDate">
+                                Fecha de vencimiento
+                            </label>
+
+                            <input
+                                id="expiryDate"
+                                type="date">
+
+                        </div>
+
+
+
+                        <!-- Estado visible -->
+                        <div class="campo-donacion">
+
+                            <label for="foodCondition">
+                                Estado visible
+                            </label>
+
+                            <select
+                                id="foodCondition"
+                                required>
+
+                                <option value="good">
+                                    Buen estado
+                                </option>
+
+                                <option value="damaged">
+                                    Envase dañado
+                                </option>
+
+                                <option value="deteriorated">
+                                    Deteriorado / alterado
+                                </option>
+
+                                <option value="contaminated">
+                                    Posible contaminación
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Higiene -->
+                        <div class="campo-donacion">
+
+                            <label for="hygiene">
+                                Higiene en manipulación
+                            </label>
+
+                            <select
+                                id="hygiene"
+                                required>
+
+                                <option value="yes">
+                                    Adecuada
+                                </option>
+
+                                <option value="no">
+                                    No garantizada
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Requiere frío -->
+                        <div class="campo-donacion">
+
+                            <label for="requiresCold">
+                                ¿Requiere frío?
+                            </label>
+
+                            <select
+                                id="requiresCold"
+                                required>
+
+                                <option value="no">
+                                    No
+                                </option>
+
+                                <option value="yes">
+                                    Sí
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Cadena de frío -->
+                        <div
+                            id="coldChainGroup"
+                            class="campo-donacion campo-oculto">
+
+                            <label for="coldChain">
+                                Cadena de frío conservada
+                            </label>
+
+                            <select id="coldChain">
+
+                                <option value="yes">
+                                    Sí
+                                </option>
+
+                                <option value="no">
+                                    No / desconocida
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Conservación de comida preparada -->
+                        <div
+                            id="preparedGroup"
+                            class="campo-donacion campo-oculto">
+
+                            <label for="preparedStorage">
+                                Conservación
+                            </label>
+
+                            <select id="preparedStorage">
+
+                                <option value="controlled">
+                                    Conservación controlada
+                                </option>
+
+                                <option value="unknown">
+                                    No comprobable
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Observación -->
+                    <div class="campo-donacion observacion-donacion">
+
+                        <label for="foodNotes">
+                            Observación
+                        </label>
+
+                        <textarea
+                            id="foodNotes"
+                            rows="4"
+                            placeholder="Información adicional de retiro, empaque o manipulación."></textarea>
+
+                    </div>
+
+
+
+                    <!-- Botones -->
+                    <div class="botones-validacion">
+
+                        <button
+                            type="submit"
+                            class="ejecutar-validacion">
+
+                            Registrar donación
+
+                        </button>
+
+
+                        <button
+                            type="reset"
+                            class="limpiar-validacion">
+
+                            Limpiar
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+
+                <!-- Resultado de la validación -->
+                <div
+                    id="validationResult"
+                    class="resultado-validacion campo-oculto">
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 5 - ALIMENTOS DISPONIBLES
+    ====================================================== -->
+
+    <div
+        id="availableModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="availableBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal modal-disponibles">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        RED SOLIDARIA
+                    </span>
+
+                    <h2>
+                        Alimentos disponibles
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarDisponiblesBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <!-- Filtros por estado -->
+                <div class="filtros-donaciones">
+
+                    <button
+                        type="button"
+                        class="filtro-donacion activo"
+                        data-status="TODAS">
+
+                        Todas
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filtro-donacion"
+                        data-status="ACTIVA">
+
+                        Disponibles
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filtro-donacion"
+                        data-status="RESERVADA">
+
+                        Reservadas
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filtro-donacion"
+                        data-status="RETIRADA">
+
+                        Retiradas
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- JavaScript carga aquí las donaciones -->
+                <div
+                    id="availableDonations"
+                    class="lista-donaciones">
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 6 - RESERVAR DONACIÓN
+    ====================================================== -->
+
+    <div
+        id="reservationModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="reservationBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal modal-reserva">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        SOLICITUD
+                    </span>
+
+                    <h2>
+                        Reservar donación
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarReservaBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <form id="reservationForm">
+
+
+                    <!-- ID interno de la donación -->
+                    <input
+                        id="reservationDonationId"
+                        type="hidden">
+
+
+                    <div class="donacion-grid">
+
+
+                        <!-- Tipo de receptor -->
+                        <div class="campo-donacion">
+
+                            <label for="receiverType">
+                                Tipo de receptor
+                            </label>
+
+                            <select
+                                id="receiverType"
+                                required>
+
+                                <option value="Comedor comunitario">
+                                    Comedor comunitario
+                                </option>
+
+                                <option value="Albergue">
+                                    Albergue
+                                </option>
+
+                                <option value="Hogar">
+                                    Hogar
+                                </option>
+
+                                <option value="Organización social">
+                                    Organización social
+                                </option>
+
+                                <option value="Centro comunitario">
+                                    Centro comunitario
+                                </option>
+
+                                <option value="Comunidad">
+                                    Comunidad
+                                </option>
+
+                                <option value="Emergencia">
+                                    Emergencia
+                                </option>
+
+                                <option value="Otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Nombre del receptor -->
+                        <div class="campo-donacion">
+
+                            <label for="receiverName">
+                                Nombre del receptor
+                            </label>
+
+                            <input
+                                id="receiverName"
+                                type="text"
+                                placeholder="Ej.: Comedor Esperanza"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Responsable -->
+                        <div class="campo-donacion">
+
+                            <label for="receiverResponsible">
+                                Responsable
+                            </label>
+
+                            <input
+                                id="receiverResponsible"
+                                type="text"
+                                placeholder="Nombre de quien retira"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Ciudad / sector -->
+                        <div class="campo-donacion">
+
+                            <label for="receiverCity">
+                                Ciudad / sector
+                            </label>
+
+                            <input
+                                id="receiverCity"
+                                type="text"
+                                placeholder="Ej.: Capiatá"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Confirmar reserva -->
+                    <div class="botones-validacion">
+
+                        <button
+                            type="submit"
+                            class="ejecutar-validacion">
+
+                            Confirmar reserva
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 7 - QUIERO AYUDAR
+    ====================================================== -->
+
+    <div
+        id="helpModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="helpBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        SUMATE A LA RED
+                    </span>
+
+                    <h2>
+                        Quiero ayudar
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarAyudarBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <form id="helpForm">
+
+
+                    <div class="donacion-grid">
+
+
+                        <!-- Tipo de donante -->
+                        <div class="campo-donacion">
+
+                            <label for="helpDonorType">
+                                Tipo de donante
+                            </label>
+
+                            <select
+                                id="helpDonorType"
+                                required>
+
+                                <option value="Persona particular">
+                                    Persona particular
+                                </option>
+
+                                <option value="Empresa">
+                                    Empresa
+                                </option>
+
+                                <option value="Organización">
+                                    Organización
+                                </option>
+
+                                <option value="Institución">
+                                    Institución
+                                </option>
+
+                                <option value="Otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Nombre -->
+                        <div class="campo-donacion">
+
+                            <label for="helpDonorName">
+                                Nombre
+                            </label>
+
+                            <input
+                                id="helpDonorName"
+                                type="text"
+                                placeholder="Tu nombre o institución"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Categoría -->
+                        <div class="campo-donacion">
+
+                            <label for="helpCategory">
+                                ¿Qué querés donar?
+                            </label>
+
+                            <select
+                                id="helpCategory"
+                                required>
+
+                                <option value="Ropa">
+                                    Ropa
+                                </option>
+
+                                <option value="Calzado">
+                                    Calzado
+                                </option>
+
+                                <option value="Abrigo">
+                                    Abrigo
+                                </option>
+
+                                <option value="Higiene">
+                                    Artículos de higiene
+                                </option>
+
+                                <option value="Útiles">
+                                    Útiles escolares
+                                </option>
+
+                                <option value="Alimento no perecedero">
+                                    Alimentos no perecederos
+                                </option>
+
+                                <option value="Artículos para bebé">
+                                    Artículos para bebé
+                                </option>
+
+                                <option value="Muebles / hogar">
+                                    Artículos para el hogar
+                                </option>
+
+                                <option value="Otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Descripción -->
+                        <div class="campo-donacion">
+
+                            <label for="helpItem">
+                                Descripción
+                            </label>
+
+                            <input
+                                id="helpItem"
+                                type="text"
+                                placeholder="Ej.: zapatos deportivos talle 38"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Cantidad -->
+                        <div class="campo-donacion">
+
+                            <label for="helpQuantity">
+                                Cantidad
+                            </label>
+
+                            <input
+                                id="helpQuantity"
+                                type="number"
+                                min="1"
+                                step="1"
+                                placeholder="Ej.: 3"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Estado -->
+                        <div class="campo-donacion">
+
+                            <label for="helpCondition">
+                                Estado
+                            </label>
+
+                            <select
+                                id="helpCondition"
+                                required>
+
+                                <option value="Nuevo">
+                                    Nuevo
+                                </option>
+
+                                <option value="Muy buen estado">
+                                    Muy buen estado
+                                </option>
+
+                                <option value="Buen estado">
+                                    Buen estado
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Ciudad -->
+                        <div class="campo-donacion">
+
+                            <label for="helpCity">
+                                Ciudad
+                            </label>
+
+                            <input
+                                id="helpCity"
+                                type="text"
+                                placeholder="Ej.: San Lorenzo"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Barrio / zona -->
+                        <div class="campo-donacion">
+
+                            <label for="helpZone">
+                                Barrio / zona
+                            </label>
+
+                            <input
+                                id="helpZone"
+                                type="text"
+                                placeholder="Ej.: San Miguel">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Observación -->
+                    <div class="campo-donacion observacion-donacion">
+
+                        <label for="helpNotes">
+                            Observación
+                        </label>
+
+                        <textarea
+                            id="helpNotes"
+                            rows="3"
+                            placeholder="Información adicional sobre la ayuda."></textarea>
+
+                    </div>
+
+
+
+                    <!-- Botón guardar -->
+                    <div class="botones-validacion">
+
+                        <button
+                            class="ejecutar-validacion"
+                            type="submit">
+
+                            Registrar ayuda
+
+                        </button>
+
+                    </div>
+
+
+
+                    <!-- Resultado -->
+                    <div
+                        id="helpResult"
+                        class="resultado-validacion campo-oculto">
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 8 - TU AYUDA CERCA
+    ====================================================== -->
+
+    <div
+        id="nearbyHelpModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="nearbyHelpBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal modal-disponibles">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        CONECTÁ TU AYUDA
+                    </span>
+
+                    <h2>
+                        Tu ayuda cerca
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarAyudaCercaBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <!-- Buscador de centros -->
+                <div class="buscador-centros">
+
+
+                    <!-- Ciudad -->
+                    <div class="campo-donacion">
+
+                        <label for="buscarCiudadAyuda">
+                            ¿Dónde estás?
+                        </label>
+
+                        <input
+                            id="buscarCiudadAyuda"
+                            type="text"
+                            placeholder="Ej.: San Lorenzo">
+
+                    </div>
+
+
+
+                    <!-- Tipo de receptor -->
+                    <div class="campo-donacion">
+
+                        <label for="buscarTipoCentro">
+                            ¿A quién querés ayudar?
+                        </label>
+
+                        <select id="buscarTipoCentro">
+
+                            <option value="">
+                                Todos
+                            </option>
+
+                            <option value="Comedor comunitario">
+                                Comedor comunitario
+                            </option>
+
+                            <option value="Albergue">
+                                Albergue
+                            </option>
+
+                            <option value="Hogar">
+                                Hogar
+                            </option>
+
+                            <option value="Organización social">
+                                Organización social
+                            </option>
+
+                            <option value="Centro comunitario">
+                                Centro comunitario
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- Botón buscar -->
+                    <button
+                        id="buscarCentrosBtn"
+                        class="ejecutar-validacion"
+                        type="button">
+
+                        Buscar lugares
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- Resultados -->
+                <div
+                    id="listaCentrosAyuda"
+                    class="lista-donaciones">
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+
+    <!-- =====================================================
+         MODAL 9 - MANOS QUE SUMAN
+         Muestra las ayudas NO alimentarias registradas.
+    ====================================================== -->
+
+    <div
+        id="helpAvailableModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="helpAvailableBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal modal-disponibles">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        AYUDA QUE SE MUEVE
+                    </span>
+
+                    <h2>
+                        Manos que suman
+                    </h2>
+
+                    <p>
+                        Ropa, calzado, juguetes, útiles y otros artículos solidarios.
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="cerrarManosSumanBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <!-- Filtros por estado -->
+                <div class="filtros-donaciones">
+
+                    <button
+                        type="button"
+                        class="filtro-ayuda activo"
+                        data-help-status="TODAS">
+
+                        Todas
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filtro-ayuda"
+                        data-help-status="ACTIVA">
+
+                        Disponibles
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filtro-ayuda"
+                        data-help-status="RESERVADA">
+
+                        Pendientes de retiro
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="filtro-ayuda"
+                        data-help-status="RETIRADA">
+
+                        Retiradas
+
+                    </button>
+
+                </div>
+
+
+
+                <!--
+                    JavaScript cargará aquí las ayudas generales.
+                    Cada tarjeta podrá mostrar:
+                    - artículo
+                    - cantidad
+                    - donante
+                    - ciudad
+                    - estado
+                    - receptor
+                    - responsable
+                    - fecha/hora de reserva
+                    - fecha/hora de retiro
+                -->
+                <div
+                    id="helpAvailableItems"
+                    class="lista-donaciones">
+
+                    <div class="sin-donaciones">
+                        Todavía no hay ayudas para mostrar.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 10 - RESERVAR AYUDA NO ALIMENTARIA
+         Se usa desde "Manos que suman".
+    ====================================================== -->
+
+    <div
+        id="helpReservationModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="helpReservationBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal modal-reserva">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        QUIERO RECIBIRLO
+                    </span>
+
+                    <h2>
+                        Reservar ayuda
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarHelpReservaBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <form id="helpReservationForm">
+
+
+                    <!-- ID interno de la ayuda seleccionada -->
+                    <input
+                        id="helpReservationItemId"
+                        type="hidden">
+
+
+                    <div class="donacion-grid">
+
+
+                        <!-- Tipo de receptor -->
+                        <div class="campo-donacion">
+
+                            <label for="helpReceiverType">
+                                Tipo de receptor
+                            </label>
+
+                            <select
+                                id="helpReceiverType"
+                                required>
+
+                                <option value="Hogar">
+                                    Hogar
+                                </option>
+
+                                <option value="Albergue">
+                                    Albergue
+                                </option>
+
+                                <option value="Organización social">
+                                    Organización social
+                                </option>
+
+                                <option value="Centro comunitario">
+                                    Centro comunitario
+                                </option>
+
+                                <option value="Comunidad">
+                                    Comunidad
+                                </option>
+
+                                <option value="Otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- Nombre del receptor -->
+                        <div class="campo-donacion">
+
+                            <label for="helpReceiverName">
+                                Nombre del receptor
+                            </label>
+
+                            <input
+                                id="helpReceiverName"
+                                type="text"
+                                placeholder="Ej.: Casa Hogar Esperanza"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Responsable -->
+                        <div class="campo-donacion">
+
+                            <label for="helpReceiverResponsible">
+                                Responsable del retiro
+                            </label>
+
+                            <input
+                                id="helpReceiverResponsible"
+                                type="text"
+                                placeholder="Nombre de quien retirará"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- Ciudad -->
+                        <div class="campo-donacion">
+
+                            <label for="helpReceiverCity">
+                                Ciudad / sector
+                            </label>
+
+                            <input
+                                id="helpReceiverCity"
+                                type="text"
+                                placeholder="Ej.: Luque"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Confirmar reserva -->
+                    <div class="botones-validacion">
+
+                        <button
+                            type="submit"
+                            class="ejecutar-validacion">
+
+                            Reservar ayuda
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 11 - ECOVALOR
+         Orientado a recicladores independientes.
+    ====================================================== -->
+
+    <div
+        id="ecoValorModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="ecoValorBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal modal-disponibles">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        CONVERTÍ LO QUE RECUPERÁS EN UNA OPORTUNIDAD
+                    </span>
+
+                    <h2>
+                        EcoValor
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarEcoValorBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <div class="donacion-grid">
+
+
+                    <!-- Material -->
+                    <div class="campo-donacion">
+
+                        <label for="recycleMaterial">
+                            ¿Qué material tenés?
+                        </label>
+
+                        <select id="recycleMaterial">
+
+                            <option value="Latas de aluminio">
+                                Latas de aluminio
+                            </option>
+
+                            <option value="Plástico PET">
+                                Plástico PET
+                            </option>
+
+                            <option value="Plástico mixto">
+                                Plástico mixto
+                            </option>
+
+                            <option value="Cartón">
+                                Cartón
+                            </option>
+
+                            <option value="Papel">
+                                Papel
+                            </option>
+
+                            <option value="Hierro">
+                                Hierro
+                            </option>
+
+                            <option value="Cobre">
+                                Cobre
+                            </option>
+
+                            <option value="Bronce">
+                                Bronce
+                            </option>
+
+                            <option value="Vidrio">
+                                Vidrio
+                            </option>
+
+                            <option value="Otros metales">
+                                Otros metales
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- Kilos -->
+                    <div class="campo-donacion">
+
+                        <label for="recycleKg">
+                            ¿Cuántos kilos tenés?
+                        </label>
+
+                        <input
+                            id="recycleKg"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="Ej.: 8.5">
+
+                    </div>
+
+
+
+                    <!-- Ciudad -->
+                    <div class="campo-donacion">
+
+                        <label for="recycleCity">
+                            ¿Dónde estás?
+                        </label>
+
+                        <input
+                            id="recycleCity"
+                            type="text"
+                            placeholder="Ej.: Luque">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Acción principal -->
+                <div class="botones-validacion">
+
+                    <button
+                        id="buscarEcoValorBtn"
+                        class="ejecutar-validacion"
+                        type="button">
+
+                        Ver valor y dónde vender
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- Resultado de precio / valor estimado -->
+                <div
+                    id="ecoValueResult"
+                    class="resultado-validacion campo-oculto">
+
+                    <!-- JavaScript cargará aquí:
+                         - material
+                         - kilos
+                         - precio de referencia por kg
+                         - valor estimado
+                         - fuente
+                         - fecha de actualización
+                    -->
+
+                </div>
+
+
+
+                <!-- Centros o compradores -->
+                <div class="observacion-donacion">
+
+                    <h3>
+                        Dónde vender cerca
+                    </h3>
+
+                    <!-- JavaScript carga aquí recicladoras/compradores. -->
+                    <div
+                        id="recyclingCenters"
+                        class="lista-donaciones">
+
+                        <div class="sin-donaciones">
+                            Elegí un material y una ciudad para comenzar.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL 12 - IMPACTO ODS
+         RESCATEPY.
+    ====================================================== -->
+
+    <div
+        id="odsImpactModal"
+        class="donacion-modal-overlay">
+
+        <!-- Fondo oscuro -->
+        <div
+            id="odsImpactBackdrop"
+            class="donacion-modal-fondo">
+        </div>
+
+
+        <section class="donacion-modal modal-disponibles">
+
+
+            <!-- Cabecera -->
+            <header class="donacion-modal-header">
+
+                <div>
+
+                    <span class="donacion-etiqueta">
+                        NUESTRO IMPACTO
+                    </span>
+
+                    <h2>
+                        RESCATEPY
+                    </h2>
+
+                </div>
+
+
+                <button
+                    id="cerrarOdsImpactoBtn"
+                    class="cerrar-donacion"
+                    type="button">
+
+                    ×
+
+                </button>
+
+            </header>
+
+
+
+            <!-- Cuerpo -->
+            <div class="donacion-modal-body">
+
+
+                <div class="dashboard">
+
+
+                    <!-- ODS 9 -->
+                    <article class="dashboard-card">
+
+                        <span class="dashboard-etiqueta">
+                            ODS 9
+                        </span>
+
+                        <strong>
+                            Industria, innovación e infraestructura
+                        </strong>
+
+                        <p>
+                            RescatePY utiliza una plataforma digital para conectar
+                            donantes, organizaciones, receptores y actores de la
+                            economía circular mediante tecnología aplicada a una
+                            necesidad social.
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- ODS 10 -->
+                    <article class="dashboard-card">
+
+                        <span class="dashboard-etiqueta">
+                            ODS 10
+                        </span>
+
+                        <strong>
+                            Reducción de las desigualdades
+                        </strong>
+
+                        <p>
+                            Facilita que personas, hogares, comedores y comunidades
+                            puedan acceder a alimentos, ropa, artículos y oportunidades
+                            mediante una red solidaria más accesible.
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- ODS 11 -->
+                    <article class="dashboard-card">
+
+                        <span class="dashboard-etiqueta">
+                            ODS 11
+                        </span>
+
+                        <strong>
+                            Ciudades y comunidades sostenibles
+                        </strong>
+
+                        <p>
+                            Fortalece redes comunitarias locales y ayuda a conectar
+                            recursos disponibles con hogares, comedores, organizaciones
+                            y puntos de apoyo cercanos.
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- ODS 12 -->
+                    <article class="dashboard-card">
+
+                        <span class="dashboard-etiqueta">
+                            ODS 12
+                        </span>
+
+                        <strong>
+                            Producción y consumo responsables
+                        </strong>
+
+                        <p>
+                            Promueve la reutilización de alimentos, ropa, objetos
+                            y materiales reciclables, reduciendo desperdicios y
+                            extendiendo la vida útil de los recursos.
+                        </p>
+
+                    </article>
+
+
+
+                    <!-- ODS 13 -->
+                    <article class="dashboard-card">
+
+                        <span class="dashboard-etiqueta">
+                            ODS 13
+                        </span>
+
+                        <strong>
+                            Acción por el clima
+                        </strong>
+
+                        <p>
+                            La recuperación, reutilización y reciclaje de materiales
+                            ayuda a disminuir residuos y favorece prácticas de menor
+                            impacto ambiental.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         Debe ir al final para que todos los elementos
+         ya existan cuando app.js se ejecute.
+    ====================================================== -->
+
+
+
+    <!-- =====================================================
+         LOGIN / REGISTRO
+    ====================================================== -->
+    <div id="authModal" class="donacion-modal-overlay auth-modal-overlay">
+        <div id="authBackdrop" class="donacion-modal-fondo"></div>
+
+        <section class="donacion-modal auth-modal">
+            <header class="donacion-modal-header">
+                <div>
+                    <span class="donacion-etiqueta">CUENTA RESCATEPY</span>
+                    <h2 id="authTitle">Iniciar sesión</h2>
+                </div>
+                <button id="closeAuth" class="cerrar-donacion" type="button">×</button>
+            </header>
+
+            <div class="donacion-modal-body">
+                <div class="auth-tabs">
+                    <button id="authTabLogin" class="auth-tab activo" type="button">Ingresar</button>
+                    <button id="authTabRegister" class="auth-tab" type="button">Registrarme</button>
+                </div>
+
+                <form id="loginForm" class="auth-form">
+                    <div class="campo-donacion">
+                        <label for="loginEmail">Correo electrónico</label>
+                        <input id="loginEmail" type="email" required placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="campo-donacion">
+                        <label for="loginPassword">Contraseña</label>
+                        <input id="loginPassword" type="password" required placeholder="Tu contraseña">
+                    </div>
+                    <button class="ejecutar-validacion" type="submit">Iniciar sesión</button>
+                </form>
+
+                <form id="registerForm" class="auth-form campo-oculto">
+                    <div class="campo-donacion">
+                        <label for="registerName">Nombre</label>
+                        <input id="registerName" type="text" required placeholder="Tu nombre u organización">
+                    </div>
+                    <div class="campo-donacion">
+                        <label for="registerEmail">Correo electrónico</label>
+                        <input id="registerEmail" type="email" required placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="campo-donacion">
+                        <label for="registerPassword">Contraseña</label>
+                        <input id="registerPassword" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <div class="campo-donacion">
+                        <label for="registerPassword2">Repetir contraseña</label>
+                        <input id="registerPassword2" type="password" minlength="6" required placeholder="Repetí la contraseña">
+                    </div>
+                    <button class="ejecutar-validacion" type="submit">Crear cuenta</button>
+                </form>
+
+                <p id="authMessage" class="auth-message"></p>
+            </div>
+        </section>
+    </div>
+
+
+    <!-- =====================================================
+         NOTIFICACIONES
+    ====================================================== -->
+    <div id="notificationModal" class="donacion-modal-overlay">
+        <div id="notificationBackdrop" class="donacion-modal-fondo"></div>
+
+        <section class="donacion-modal auth-modal">
+            <header class="donacion-modal-header">
+                <div>
+                    <span class="donacion-etiqueta">SOLICITUDES</span>
+                    <h2>Notificaciones</h2>
+                </div>
+                <button id="closeNotifications" class="cerrar-donacion" type="button">×</button>
+            </header>
+
+            <div class="donacion-modal-body">
+                <div id="notificationList" class="notificacion-lista"></div>
+            </div>
+        </section>
+    </div>
+
+
+    <!-- Login y API se cargan antes de la lógica principal. -->
+    <script src="auth-client.js"></script>
+    <script src="app.js"></script>
+
+</body>
+
+</html>

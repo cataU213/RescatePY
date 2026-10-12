@@ -1,0 +1,5736 @@
+/* =========================================================
+   ALIMENTAPY
+   HOJA DE ESTILOS PRINCIPAL
+========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+:root {
+
+    --verde: #159a52;
+    --verde-oscuro: #0c7140;
+    --verde-claro: #e3f6eb;
+
+    --azul: #37a8d1;
+    --azul-oscuro: #1d6d91;
+
+    --amarillo: #e5ae43;
+    --naranja: #e88943;
+    --rojo: #d95561;
+
+    --fondo: #f5f7f6;
+    --blanco: #ffffff;
+
+    --texto: #17324d;
+    --gris: #68766f;
+
+    --borde: #e1e8e4;
+}
+
+
+/* =========================================================
+   RESET GENERAL
+========================================================= */
+
+* {
+
+    box-sizing: border-box;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+html,
+body {
+
+    width: 100%;
+
+    min-height: 100%;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+body {
+
+    font-family:
+        "Inter",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        var(--fondo);
+
+    color:
+        var(--texto);
+
+    overflow-x: hidden;
+}
+
+
+button,
+input,
+select,
+textarea {
+
+    font: inherit;
+}
+
+
+button {
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.contenido-principal {
+
+    scrollbar-width: none;
+
+    -ms-overflow-style: none;
+}
+
+
+.contenido-principal::-webkit-scrollbar {
+
+    width: 0;
+
+    display: none;
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+
+    width: 100%;
+
+    height: 64px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    padding:
+        0
+        20px;
+
+    background:
+        white;
+
+    border-bottom:
+        1px solid
+        var(--borde);
+
+    position: relative;
+
+    z-index: 1000;
+}
+
+
+/*
+   Ocultamos la marca A / AlimentaPy
+   si todavía está presente en el HTML.
+*/
+
+.marca,
+.marca-superior {
+
+    display: none !important;
+}
+
+
+/* Botón claro / oscuro */
+
+.boton-tema {
+
+    width: 40px;
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background:
+        transparent;
+
+    color:
+        var(--texto);
+
+    font-size: 19px;
+
+    transition:
+        background .2s;
+}
+
+
+.boton-tema:hover {
+
+    background:
+        #eef3f0;
+}
+
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+========================================================= */
+
+.contenido-principal {
+
+    width: 100%;
+
+    min-height:
+        calc(100vh - 64px);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    background:
+        var(--fondo);
+
+    /*
+       Sin padding lateral:
+       permite que la imagen llegue a los bordes.
+    */
+
+    padding:
+        0
+        0
+        30px;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   PORTADA
+========================================================= */
+
+.portada {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0;
+
+    padding: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+}
+
+
+/* =========================================================
+   IMAGEN PRINCIPAL
+========================================================= */
+
+/*
+   Compatible con los dos nombres
+   que utilizamos durante el desarrollo.
+*/
+
+.imagen-principal,
+.imagen-protagonista {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0;
+
+    padding: 0;
+
+    display: block;
+
+    overflow: hidden;
+
+    background:
+        #e8ecea;
+}
+
+
+.imagen-principal img,
+.imagen-protagonista img {
+
+    width: 100%;
+
+    max-width: 100%;
+
+    /*
+       La imagen conserva su proporción original
+       y se muestra completa, sin recortes.
+    */
+
+    height: auto;
+
+    max-height: 520px;
+
+    display: block;
+
+    margin: 0 auto;
+
+    padding: 0;
+
+    object-fit: contain;
+
+    object-position: center;
+
+    border-radius: 0;
+
+    box-shadow: none;
+
+    background:
+        #e8ecea;
+}
+
+
+/* =========================================================
+   ACCIONES PRINCIPALES
+   LOS TRES BOTONES
+========================================================= */
+
+.acciones-principales {
+
+    /*
+       Los botones sí mantienen
+       un pequeño espacio lateral.
+    */
+
+    width:
+        calc(100% - 40px);
+
+    max-width:
+        1250px;
+
+    margin:
+        24px
+        auto
+        0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   BOTONES PRINCIPALES
+========================================================= */
+
+/*
+   Compatible con:
+   .boton-principal
+   y .accion
+*/
+
+.boton-principal,
+.accion {
+
+    width: 100%;
+
+    min-height: 50px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        11px
+        18px;
+
+    border: none;
+
+    border-radius:
+        12px;
+
+    background:
+        var(--verde);
+
+    color:
+        white;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+
+    text-align:
+        center;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 5px 16px
+        rgba(21, 154, 82, .15);
+
+    transition:
+        background .2s,
+        transform .2s,
+        box-shadow .2s;
+}
+
+
+.boton-principal:hover,
+.accion:hover {
+
+    background:
+        var(--verde-oscuro);
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(21, 154, 82, .20);
+}
+
+
+/*
+   Si tu HTML anterior todavía contiene
+   estos elementos, no los mostramos.
+*/
+
+.accion-icono,
+.flecha,
+.accion span {
+
+    display: none;
+}
+
+
+.accion strong {
+
+    display: block;
+
+    margin: 0;
+
+    color: white;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+}
+
+
+/*
+   Anulamos colores anteriores.
+*/
+
+.accion-verde,
+.accion-celeste,
+.accion-naranja {
+
+    background:
+        var(--verde);
+}
+
+
+/* =========================================================
+   MODALES
+========================================================= */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 5000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        25px;
+}
+
+
+/*
+   JavaScript puede agregar esta clase.
+*/
+
+.modal.activo {
+
+    display: flex;
+}
+
+
+/* Fondo oscuro */
+
+.modal-fondo {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(15, 28, 23, .52);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+
+/* Ventana */
+
+.modal-contenido {
+
+    width: min(1100px, 95vw);
+
+    max-height: 88vh;
+
+    position: relative;
+
+    z-index: 2;
+
+    overflow-y: auto;
+
+    padding: 0;
+
+    border-radius:
+        24px;
+
+    background:
+        white;
+
+    box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, .23);
+}
+
+
+/* =========================================================
+   CABECERA MODAL
+========================================================= */
+
+.modal-cabecera {
+
+    min-height: 76px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding:
+        18px
+        24px;
+
+    border-bottom:
+        1px solid
+        var(--borde);
+}
+
+
+.modal-cabecera h2 {
+
+    margin: 0;
+
+    color:
+        var(--texto);
+
+    font-size:
+        25px;
+
+    font-weight:
+        700;
+}
+
+
+.cerrar-modal {
+
+    width: 40px;
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius:
+        11px;
+
+    background:
+        #edf2ef;
+
+    color:
+        var(--texto);
+
+    font-size:
+        24px;
+
+    transition:
+        background .2s;
+}
+
+
+.cerrar-modal:hover {
+
+    background:
+        #dde6e1;
+}
+
+
+/* =========================================================
+   RED INSTITUCIONAL
+========================================================= */
+
+.lista-organizaciones {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:
+        15px;
+
+    padding:
+        22px;
+}
+
+
+/* Tarjeta organización */
+
+.organizacion-card {
+
+    min-height: 260px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding:
+        20px;
+
+    border:
+        1px solid
+        var(--borde);
+
+    border-radius:
+        18px;
+
+    background:
+        #f9fbfa;
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+
+.organizacion-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 8px 22px
+        rgba(20, 50, 38, .08);
+}
+
+
+.organizacion-card h3 {
+
+    margin:
+        8px
+        0;
+
+    color:
+        var(--texto);
+
+    font-size:
+        17px;
+}
+
+
+.organizacion-card p {
+
+    margin:
+        4px
+        0;
+
+    color:
+        var(--gris);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.5;
+}
+
+
+.organizacion-tipo {
+
+    width:
+        fit-content;
+
+    display:
+        inline-block;
+
+    padding:
+        5px
+        9px;
+
+    border-radius:
+        20px;
+
+    background:
+        var(--verde-claro);
+
+    color:
+        var(--verde-oscuro);
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   BOTONES TARJETAS
+========================================================= */
+
+.botones-card {
+
+    display: flex;
+
+    gap:
+        8px;
+
+    margin-top:
+        auto;
+
+    padding-top:
+        15px;
+}
+
+
+.boton-card {
+
+    flex: 1;
+
+    padding:
+        9px
+        10px;
+
+    border: none;
+
+    border-radius:
+        9px;
+
+    background:
+        var(--verde);
+
+    color:
+        white;
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+}
+
+
+.boton-card:hover {
+
+    background:
+        var(--verde-oscuro);
+}
+
+
+.boton-card.secundario {
+
+    background:
+        #e9efec;
+
+    color:
+        var(--texto);
+}
+
+
+.boton-card.secundario:hover {
+
+    background:
+        #dae4df;
+}
+
+
+/* =========================================================
+   AYUDA TERRITORIAL
+========================================================= */
+
+.buscador {
+
+    padding:
+        20px
+        22px
+        5px;
+}
+
+
+.buscador input {
+
+    width: 100%;
+
+    height: 46px;
+
+    padding:
+        0
+        15px;
+
+    border:
+        1px solid
+        var(--borde);
+
+    border-radius:
+        11px;
+
+    outline: none;
+
+    color:
+        var(--texto);
+
+    background:
+        white;
+}
+
+
+.buscador input:focus {
+
+    border-color:
+        var(--verde);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(21, 154, 82, .08);
+}
+
+
+/* Lista */
+
+.lista-comedores,
+#listaComedores {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:
+        15px;
+
+    padding:
+        20px
+        22px
+        24px;
+}
+
+
+.comedor-card {
+
+    height: 100%;
+
+    padding:
+        20px;
+
+    border:
+        1px solid
+        var(--borde);
+
+    border-radius:
+        17px;
+
+    background:
+        #f9fbfa;
+}
+
+
+.comedor-icono {
+
+    width:
+        46px;
+
+    height:
+        46px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-bottom:
+        12px;
+
+    border-radius:
+        13px;
+
+    background:
+        #e8f6fb;
+
+    color:
+        var(--azul);
+
+    font-size:
+        21px;
+}
+
+
+.comedor-card h3 {
+
+    margin-bottom:
+        8px;
+
+    font-size:
+        17px;
+}
+
+
+.comedor-card p {
+
+    margin:
+        5px
+        0;
+
+    color:
+        var(--gris);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.45;
+}
+
+
+.distancia {
+
+    display:
+        inline-block;
+
+    margin-top:
+        8px;
+
+    padding:
+        5px
+        9px;
+
+    border-radius:
+        20px;
+
+    background:
+        var(--verde-claro);
+
+    color:
+        var(--verde-oscuro);
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   INTELIGENCIA SOCIAL
+========================================================= */
+
+.modal-dashboard {
+
+    width:
+        min(1150px, 96vw);
+}
+
+
+.dashboard {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:
+        16px;
+
+    padding:
+        24px;
+}
+
+
+.dashboard-card {
+
+    padding:
+        22px;
+
+    border:
+        1px solid
+        var(--borde);
+
+    border-radius:
+        18px;
+
+    background:
+        #f9fbfa;
+}
+
+
+.dashboard-etiqueta {
+
+    display:
+        block;
+
+    margin-bottom:
+        10px;
+
+    color:
+        var(--gris);
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+}
+
+
+.dashboard-card strong {
+
+    display:
+        block;
+
+    margin-bottom:
+        17px;
+
+    color:
+        var(--texto);
+
+    font-size:
+        22px;
+}
+
+
+/* =========================================================
+   BARRAS DASHBOARD
+========================================================= */
+
+.barra {
+
+    width:
+        100%;
+
+    height:
+        9px;
+
+    overflow:
+        hidden;
+
+    border-radius:
+        20px;
+
+    background:
+        #e4ebe7;
+}
+
+
+.barra-progreso {
+
+    width:
+        70%;
+
+    height:
+        100%;
+
+    border-radius:
+        inherit;
+
+    background:
+        var(--verde);
+}
+
+
+/* =========================================================
+   TRAZABILIDAD
+========================================================= */
+
+.trazabilidad {
+
+    margin:
+        0
+        24px
+        25px;
+
+    padding:
+        22px;
+
+    border:
+        1px solid
+        var(--borde);
+
+    border-radius:
+        18px;
+
+    background:
+        white;
+}
+
+
+.trazabilidad h3 {
+
+    margin-bottom:
+        18px;
+
+    font-size:
+        20px;
+}
+
+
+.trazabilidad-pasos {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap:
+        13px;
+}
+
+
+.paso {
+
+    display: flex;
+
+    align-items: center;
+
+    gap:
+        10px;
+
+    padding:
+        13px;
+
+    border-radius:
+        13px;
+
+    background:
+        var(--verde-claro);
+}
+
+
+.paso span {
+
+    width:
+        30px;
+
+    height:
+        30px;
+
+    flex-shrink:
+        0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius:
+        9px;
+
+    background:
+        var(--verde);
+
+    color:
+        white;
+
+    font-size:
+        12px;
+
+    font-weight:
+        bold;
+}
+
+
+.paso p {
+
+    margin: 0;
+
+    color:
+        var(--texto);
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   MAPA
+========================================================= */
+
+.mapa-contenedor {
+
+    width:
+        100%;
+
+    overflow:
+        hidden;
+
+    border-radius:
+        18px;
+
+    background:
+        white;
+}
+
+
+.mapa-header {
+
+    min-height:
+        65px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    padding:
+        15px
+        18px;
+}
+
+
+.mapa-header small {
+
+    display:
+        block;
+
+    color:
+        var(--verde);
+
+    font-size:
+        10px;
+}
+
+
+.mapa-header strong {
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+}
+
+
+.mapa-frame {
+
+    width:
+        100%;
+
+    height:
+        450px;
+
+    display:
+        block;
+
+    border:
+        none;
+}
+
+
+/* =========================================================
+   FORMULARIOS
+========================================================= */
+
+.formulario-card {
+
+    padding:
+        26px;
+
+    border-radius:
+        20px;
+
+    background:
+        white;
+
+    box-shadow:
+        0 7px 25px
+        rgba(20, 50, 38, .05);
+}
+
+
+.form-control,
+.form-select {
+
+    width:
+        100%;
+
+    min-height:
+        44px;
+
+    padding:
+        9px
+        12px;
+
+    border:
+        1px solid
+        #dce4e0;
+
+    border-radius:
+        10px;
+
+    outline:
+        none;
+}
+
+
+.form-control:focus,
+.form-select:focus {
+
+    border-color:
+        var(--verde);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(21, 154, 82, .10);
+}
+
+
+/* =========================================================
+   RESULTADOS VALIDACIÓN
+========================================================= */
+
+.resultado-ok,
+.resultado-error {
+
+    margin:
+        20px;
+
+    padding:
+        19px;
+
+    border-radius:
+        14px;
+}
+
+
+.resultado-ok {
+
+    background:
+        #e7f6ec;
+
+    border-left:
+        5px solid
+        var(--verde);
+}
+
+
+.resultado-error {
+
+    background:
+        #fdebed;
+
+    border-left:
+        5px solid
+        var(--rojo);
+}
+
+
+/* =========================================================
+   UTILIDADES
+========================================================= */
+
+.oculto {
+
+    display:
+        none !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE TABLET
+========================================================= */
+
+@media (max-width: 950px) {
+
+    .imagen-principal img,
+    .imagen-protagonista img {
+
+        height:
+            auto;
+
+        max-height:
+            420px;
+
+        object-fit:
+            contain;
+    }
+
+
+    .acciones-principales {
+
+        width:
+            calc(100% - 30px);
+
+        gap:
+            12px;
+    }
+
+
+    .lista-organizaciones,
+    .lista-comedores,
+    #listaComedores {
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    .dashboard {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .trazabilidad-pasos {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE CELULAR
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .topbar {
+
+        height:
+            56px;
+
+        padding:
+            0
+            12px;
+    }
+
+
+    .contenido-principal {
+
+        min-height:
+            calc(100vh - 56px);
+    }
+
+
+    /*
+       Imagen sigue ocupando
+       todo el ancho.
+    */
+
+    .imagen-principal img,
+    .imagen-protagonista img {
+
+        width:
+            100%;
+
+        height:
+            auto;
+
+        max-height:
+            320px;
+
+        object-fit:
+            contain;
+
+        object-position:
+            center;
+    }
+
+
+    /*
+       Botones uno debajo del otro.
+    */
+
+    .acciones-principales {
+
+        width:
+            calc(100% - 24px);
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            10px;
+
+        margin-top:
+            15px;
+    }
+
+
+    .boton-principal,
+    .accion {
+
+        min-height:
+            47px;
+
+        font-size:
+            14px;
+    }
+
+
+    /*
+       Modal casi a pantalla completa.
+    */
+
+    .modal {
+
+        padding:
+            8px;
+    }
+
+
+    .modal-contenido {
+
+        width:
+            100%;
+
+        max-height:
+            94vh;
+
+        border-radius:
+            18px;
+    }
+
+
+    .modal-cabecera {
+
+        min-height:
+            65px;
+
+        padding:
+            14px
+            16px;
+    }
+
+
+    .modal-cabecera h2 {
+
+        font-size:
+            20px;
+    }
+
+
+    /*
+       Una tarjeta por fila.
+    */
+
+    .lista-organizaciones,
+    .lista-comedores,
+    #listaComedores {
+
+        grid-template-columns:
+            1fr;
+
+        padding:
+            15px;
+    }
+
+
+    .buscador {
+
+        padding:
+            15px
+            15px
+            0;
+    }
+
+
+    .dashboard {
+
+        grid-template-columns:
+            1fr;
+
+        padding:
+            15px;
+    }
+
+
+    .trazabilidad {
+
+        margin:
+            0
+            15px
+            15px;
+
+        padding:
+            15px;
+    }
+
+
+    .trazabilidad-pasos {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .mapa-frame {
+
+        height:
+            340px;
+    }
+
+}
+/* =========================================================
+   MENÚ ODS
+========================================================= */
+
+.topbar {
+
+    /* Ahora tenemos contenido a izquierda y derecha */
+    justify-content: space-between !important;
+}
+
+
+.menu-ods-contenedor {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+}
+
+
+/* Botón hamburguesa */
+
+.ods-menu-btn {
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        0
+        16px;
+
+    border:
+        1px solid
+        #dfe6e2;
+
+    border-radius:
+        13px;
+
+    background:
+        white;
+
+    color:
+        var(--texto);
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    transition:
+        .2s;
+}
+
+
+.ods-menu-btn:hover {
+
+    background:
+        var(--verde-claro);
+
+    border-color:
+        #b7dac5;
+}
+
+
+.hamburguesa {
+
+    font-size:
+        20px;
+
+    line-height:
+        1;
+}
+
+
+/* =========================================================
+   DESPLEGABLE
+========================================================= */
+
+.ods-dropdown {
+
+    position: absolute;
+
+    top:
+        calc(100% + 10px);
+
+    left: 0;
+
+    width:
+        210px;
+
+    padding:
+        8px;
+
+    border:
+        1px solid
+        #e0e6e3;
+
+    border-radius:
+        14px;
+
+    background:
+        white;
+
+    box-shadow:
+        0 14px 35px
+        rgba(20, 50, 38, .15);
+
+    opacity:
+        0;
+
+    visibility:
+        hidden;
+
+    transform:
+        translateY(-5px);
+
+    transition:
+        .2s;
+
+    z-index:
+        5000;
+}
+
+
+/* Estado abierto */
+
+.ods-dropdown.activo {
+
+    opacity:
+        1;
+
+    visibility:
+        visible;
+
+    transform:
+        translateY(0);
+}
+
+
+.ods-dropdown button {
+
+    width:
+        100%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        11px;
+
+    padding:
+        12px;
+
+    border:
+        none;
+
+    border-radius:
+        10px;
+
+    background:
+        transparent;
+
+    color:
+        var(--texto);
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+    text-align:
+        left;
+
+    cursor:
+        pointer;
+}
+
+
+.ods-dropdown button:hover {
+
+    background:
+        var(--verde-claro);
+
+    color:
+        var(--verde-oscuro);
+}
+
+
+.menu-icono {
+
+    width:
+        30px;
+
+    height:
+        30px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        9px;
+
+    background:
+        var(--verde);
+
+    color:
+        white;
+
+    font-size:
+        18px;
+}
+
+
+/* =========================================================
+   MODAL DONACIÓN
+========================================================= */
+
+.donacion-modal-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        10000;
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        24px;
+}
+
+
+/* Modal visible */
+
+.donacion-modal-overlay.activo {
+
+    display:
+        flex;
+}
+
+
+/* Fondo detrás */
+
+.donacion-modal-fondo {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background:
+        rgba(21, 30, 42, .58);
+
+    backdrop-filter:
+        blur(6px);
+}
+
+
+/* Ventana principal */
+
+.donacion-modal {
+
+    width:
+        min(800px, 95vw);
+
+    max-height:
+        90vh;
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    overflow:
+        hidden;
+
+    border-radius:
+        26px;
+
+    background:
+        #f8f9fa;
+
+    box-shadow:
+        0 28px 80px
+        rgba(0, 0, 0, .28);
+}
+
+
+/* =========================================================
+   CABECERA
+========================================================= */
+
+.donacion-modal-header {
+
+    min-height:
+        98px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        #d8dfdc;
+
+    background:
+        #f4f6f5;
+}
+
+
+.donacion-etiqueta {
+
+    display:
+        block;
+
+    margin-bottom:
+        8px;
+
+    color:
+        var(--verde);
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1px;
+}
+
+
+.donacion-modal-header h2 {
+
+    margin:
+        0;
+
+    color:
+        var(--texto);
+
+    font-size:
+        23px;
+
+    font-weight:
+        500;
+}
+
+
+/* Botón cerrar */
+
+.cerrar-donacion {
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        none;
+
+    border-radius:
+        13px;
+
+    background:
+        #e9eeec;
+
+    color:
+        var(--texto);
+
+    font-size:
+        25px;
+
+    cursor:
+        pointer;
+}
+
+
+.cerrar-donacion:hover {
+
+    background:
+        #dce4e0;
+}
+
+
+/* =========================================================
+   CUERPO CON SCROLL
+========================================================= */
+
+.donacion-modal-body {
+
+    max-height:
+        calc(90vh - 98px);
+
+    overflow-y:
+        auto;
+
+    padding:
+        24px;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #929a96
+        transparent;
+}
+
+
+/* =========================================================
+   FORMULARIO
+========================================================= */
+
+.donacion-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap:
+        17px
+        14px;
+}
+
+
+.campo-donacion {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        7px;
+}
+
+
+.campo-donacion label {
+
+    color:
+        #536176;
+
+    font-size:
+        13px;
+
+    font-weight:
+        700;
+}
+
+
+.campo-donacion input,
+.campo-donacion select,
+.campo-donacion textarea {
+
+    width:
+        100%;
+
+    border:
+        1px solid
+        #e1e6e4;
+
+    border-radius:
+        13px;
+
+    background:
+        #f4f5f6;
+
+    color:
+        var(--texto);
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+    outline:
+        none;
+}
+
+
+.campo-donacion input,
+.campo-donacion select {
+
+    height:
+        42px;
+
+    padding:
+        0
+        13px;
+}
+
+
+.campo-donacion textarea {
+
+    min-height:
+        78px;
+
+    padding:
+        13px;
+
+    resize:
+        vertical;
+}
+
+
+.campo-donacion input:focus,
+.campo-donacion select:focus,
+.campo-donacion textarea:focus {
+
+    border-color:
+        var(--verde);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(21, 154, 82, .08);
+}
+
+
+/* Observaciones ocupa las dos columnas */
+
+.observacion-donacion {
+
+    margin-top:
+        18px;
+}
+
+
+/* =========================================================
+   BOTONES DEL FORMULARIO
+========================================================= */
+
+.botones-validacion {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    margin-top:
+        16px;
+}
+
+
+.ejecutar-validacion {
+
+    min-height:
+        47px;
+
+    padding:
+        0
+        19px;
+
+    border:
+        none;
+
+    border-radius:
+        13px;
+
+    background:
+        var(--verde);
+
+    color:
+        white;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 8px 20px
+        rgba(21, 154, 82, .18);
+}
+
+
+.ejecutar-validacion:hover {
+
+    background:
+        var(--verde-oscuro);
+}
+
+
+.limpiar-validacion {
+
+    min-height:
+        47px;
+
+    padding:
+        0
+        20px;
+
+    border:
+        none;
+
+    border-radius:
+        13px;
+
+    background:
+        #e8ecea;
+
+    color:
+        var(--texto);
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+}
+
+
+/* =========================================================
+   RESULTADO VALIDACIÓN
+========================================================= */
+
+.resultado-validacion {
+
+    margin-top:
+        20px;
+
+    padding:
+        20px;
+
+    border:
+        1px solid
+        #e0b85d;
+
+    border-radius:
+        18px;
+
+    background:
+        #f4efe5;
+
+    color:
+        var(--texto);
+}
+
+
+.resultado-validacion h3 {
+
+    margin:
+        0
+        0
+        10px;
+
+    font-size:
+        19px;
+
+    font-weight:
+        500;
+}
+
+
+.resultado-validacion p {
+
+    margin:
+        6px
+        0;
+
+    line-height:
+        1.55;
+
+    font-size:
+        14px;
+}
+
+
+.resultado-validacion strong {
+
+    display:
+        block;
+
+    margin-top:
+        17px;
+
+    font-size:
+        14px;
+}
+
+
+.resultado-validacion ul {
+
+    margin:
+        9px
+        0
+        0
+        18px;
+}
+
+
+.resultado-validacion li {
+
+    margin-bottom:
+        7px;
+
+    line-height:
+        1.55;
+
+    font-size:
+        14px;
+}
+
+
+/* Resultado aceptado */
+
+.resultado-validacion.aceptado {
+
+    border-color:
+        #72c695;
+
+    background:
+        #eaf7ef;
+}
+
+
+/* Resultado rechazado */
+
+.resultado-validacion.rechazado {
+
+    border-color:
+        #dc7a80;
+
+    background:
+        #fcebed;
+}
+
+
+/* Resultado revisión */
+
+.resultado-validacion.revision {
+
+    border-color:
+        #e0b85d;
+
+    background:
+        #f6f0e5;
+}
+
+
+/* Ocultar campos */
+
+.campo-oculto {
+
+    display:
+        none !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .ods-menu-btn {
+
+        padding:
+            0
+            12px;
+    }
+
+
+    .donacion-modal-overlay {
+
+        padding:
+            8px;
+    }
+
+
+    .donacion-modal {
+
+        width:
+            100%;
+
+        max-height:
+            95vh;
+
+        border-radius:
+            20px;
+    }
+
+
+    .donacion-modal-body {
+
+        max-height:
+            calc(95vh - 90px);
+
+        padding:
+            16px;
+    }
+
+
+    .donacion-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .botones-validacion {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+    }
+
+
+    .ejecutar-validacion,
+    .limpiar-validacion {
+
+        width:
+            100%;
+    }
+
+}
+/* =========================================================
+   ALIMENTOS DISPONIBLES
+========================================================= */
+
+.modal-disponibles {
+
+    width:
+        min(1050px, 96vw);
+}
+
+
+/* =========================================================
+   FILTROS
+========================================================= */
+
+.filtros-donaciones {
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+
+    margin-bottom:
+        20px;
+}
+
+
+.filtro-donacion {
+
+    padding:
+        8px
+        14px;
+
+    border:
+        1px solid
+        #dce5e0;
+
+    border-radius:
+        20px;
+
+    background:
+        white;
+
+    color:
+        var(--texto);
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+}
+
+
+.filtro-donacion:hover {
+
+    border-color:
+        var(--verde);
+}
+
+
+.filtro-donacion.activo {
+
+    background:
+        var(--verde);
+
+    border-color:
+        var(--verde);
+
+    color:
+        white;
+}
+
+
+/* =========================================================
+   LISTADO
+========================================================= */
+
+.lista-donaciones {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap:
+        15px;
+}
+
+
+/* =========================================================
+   TARJETA DE DONACIÓN
+========================================================= */
+
+.donacion-publicada {
+
+    padding:
+        20px;
+
+    border:
+        1px solid
+        #dfe7e3;
+
+    border-radius:
+        18px;
+
+    background:
+        white;
+
+    box-shadow:
+        0 5px 18px
+        rgba(20,50,38,.05);
+}
+
+
+.donacion-superior {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap:
+        15px;
+}
+
+
+.donacion-donante {
+
+    color:
+        var(--verde);
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .6px;
+}
+
+
+.donacion-publicada h3 {
+
+    margin:
+        6px
+        0;
+
+    color:
+        var(--texto);
+
+    font-size:
+        21px;
+}
+
+
+.donacion-cantidad {
+
+    color:
+        var(--gris);
+
+    font-size:
+        13px;
+}
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+.estado-donacion {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        6px
+        10px;
+
+    border-radius:
+        20px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+}
+
+
+.estado-donacion::before {
+
+    content:
+        "";
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+}
+
+
+.estado-activa {
+
+    background:
+        #e4f8ec;
+
+    color:
+        #08753c;
+}
+
+
+.estado-activa::before {
+
+    background:
+        #12a75b;
+}
+
+
+.estado-reservada {
+
+    background:
+        #fff3d8;
+
+    color:
+        #956200;
+}
+
+
+.estado-reservada::before {
+
+    background:
+        #e5a523;
+}
+
+
+.estado-retirada {
+
+    background:
+        #e9edf0;
+
+    color:
+        #59656d;
+}
+
+
+.estado-retirada::before {
+
+    background:
+        #7c878f;
+}
+
+
+/* =========================================================
+   DETALLES
+========================================================= */
+
+.donacion-detalles {
+
+    display:
+        grid;
+
+    gap:
+        7px;
+
+    margin-top:
+        17px;
+
+    padding-top:
+        15px;
+
+    border-top:
+        1px solid
+        #edf1ef;
+}
+
+
+.donacion-detalles p {
+
+    margin:
+        0;
+
+    color:
+        var(--gris);
+
+    font-size:
+        12px;
+
+    line-height:
+        1.5;
+}
+
+
+.donacion-detalles strong {
+
+    color:
+        var(--texto);
+}
+
+
+/* =========================================================
+   RECEPTOR
+========================================================= */
+
+.donacion-receptor {
+
+    margin-top:
+        14px;
+
+    padding:
+        13px;
+
+    border-radius:
+        12px;
+
+    background:
+        #f4f7f5;
+}
+
+
+.donacion-receptor span {
+
+    display:
+        block;
+
+    margin-bottom:
+        4px;
+
+    color:
+        var(--verde);
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    text-transform:
+        uppercase;
+}
+
+
+.donacion-receptor strong {
+
+    font-size:
+        13px;
+}
+
+
+/* =========================================================
+   ACCIONES
+========================================================= */
+
+.acciones-donacion {
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+
+    margin-top:
+        17px;
+}
+
+
+.accion-donacion {
+
+    padding:
+        9px
+        13px;
+
+    border:
+        none;
+
+    border-radius:
+        9px;
+
+    background:
+        var(--verde);
+
+    color:
+        white;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+}
+
+
+.accion-donacion:hover {
+
+    background:
+        var(--verde-oscuro);
+}
+
+
+.accion-donacion.secundaria {
+
+    background:
+        #e9efec;
+
+    color:
+        var(--texto);
+}
+
+
+/* =========================================================
+   SIN DONACIONES
+========================================================= */
+
+.sin-donaciones {
+
+    grid-column:
+        1 / -1;
+
+    padding:
+        45px;
+
+    text-align:
+        center;
+
+    color:
+        var(--gris);
+
+    border:
+        1px dashed
+        #cad5cf;
+
+    border-radius:
+        16px;
+}
+
+
+/* =========================================================
+   RESERVA
+========================================================= */
+
+.modal-reserva {
+
+    width:
+        min(650px, 94vw);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 750px) {
+
+    .lista-donaciones {
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
+/* =========================================================
+   TU AYUDA CERCA
+========================================================= */
+
+.buscador-centros {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr
+        auto;
+
+    gap:
+        14px;
+
+    align-items:
+        end;
+
+    margin-bottom:
+        22px;
+}
+
+
+.buscador-centros
+.ejecutar-validacion {
+
+    height:
+        42px;
+}
+
+
+@media (max-width: 750px) {
+
+    .buscador-centros {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+/* =========================================================
+   AJUSTE FINAL - TOPBAR VERDE + BOTÓN EQUIPO JUNTO A LA LUNA
+   Este bloque funciona con tu HTML actual, donde
+   .franja-equipo está inmediatamente después del <header>.
+========================================================= */
+
+/* Barra superior verde */
+.topbar {
+    width: 100%;
+    height: 64px;
+    min-height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between !important;
+
+    padding:
+        0
+        18px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #0f8f4f 0%,
+            #18a85c 55%,
+            #25b96a 100%
+        ) !important;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, .18);
+
+    box-shadow:
+        0 6px 18px
+        rgba(12, 91, 51, .16);
+
+    position: relative;
+    z-index: 1000;
+}
+
+
+/* Botón ODS sobre fondo verde */
+.ods-menu-btn {
+    height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding:
+        0
+        15px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .65);
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(255, 255, 255, .96);
+
+    color:
+        var(--texto);
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+}
+
+
+.ods-menu-btn:hover {
+    background:
+        #ffffff;
+
+    border-color:
+        #ffffff;
+}
+
+
+/* Botón luna */
+.boton-tema {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .60);
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(255, 255, 255, .96);
+
+    color:
+        var(--texto);
+
+    font-size:
+        18px;
+
+    transition:
+        transform .2s,
+        background .2s;
+}
+
+
+.boton-tema:hover {
+    background:
+        #ffffff;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   FRANJA DEL EQUIPO
+   Se transforma visualmente en un botón dentro del topbar.
+========================================================= */
+
+.franja-equipo {
+    position: absolute;
+
+    top: 0;
+    right: 72px;
+
+    width: auto;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0;
+
+    background:
+        transparent !important;
+
+    border: none !important;
+    box-shadow: none !important;
+
+    z-index: 1100;
+}
+
+
+/* Contenedor interno */
+.franja-equipo-contenido {
+    width: auto;
+    min-height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 0;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Ocultamos el texto de la franja */
+.franja-equipo-texto {
+    display: none !important;
+}
+
+
+/* Botón comercial del equipo */
+.boton-equipo {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        0
+        17px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .70);
+
+    border-radius:
+        999px;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--verde-oscuro);
+
+    font-size:
+        13px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 6px 14px
+        rgba(0, 0, 0, .12);
+
+    transition:
+        transform .2s,
+        box-shadow .2s,
+        background .2s;
+}
+
+
+.boton-equipo:hover {
+    background:
+        #f4fff8;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 9px 18px
+        rgba(0, 0, 0, .15);
+}
+
+
+/* =========================================================
+   MODAL DEL EQUIPO
+========================================================= */
+
+.equipo-lista {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        14px;
+}
+
+
+.equipo-item {
+    position: relative;
+
+    padding:
+        17px
+        18px
+        17px
+        50px;
+
+    border:
+        1px solid
+        #d7e7de;
+
+    border-radius:
+        16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(21, 154, 82, .10),
+            rgba(255, 255, 255, .96)
+        );
+
+    color:
+        var(--texto);
+
+    font-size:
+        14px;
+
+    font-weight:
+        800;
+
+    box-shadow:
+        0 7px 18px
+        rgba(15, 91, 56, .06);
+}
+
+
+.equipo-item::before {
+    content:
+        "✓";
+
+    position:
+        absolute;
+
+    left:
+        17px;
+
+    top:
+        50%;
+
+    width:
+        24px;
+
+    height:
+        24px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    transform:
+        translateY(-50%);
+
+    border-radius:
+        50%;
+
+    background:
+        var(--verde);
+
+    color:
+        white;
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
+}
+
+
+/* =========================================================
+   ECOVALOR
+========================================================= */
+
+.eco-encabezado {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        14px;
+
+    flex-wrap:
+        wrap;
+
+    margin:
+        6px
+        0
+        12px;
+}
+
+
+.eco-encabezado h3 {
+    margin: 0;
+
+    color:
+        var(--texto);
+
+    font-size:
+        16px;
+
+    font-weight:
+        800;
+}
+
+
+.eco-maps-btn {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        40px;
+
+    padding:
+        10px
+        15px;
+
+    border-radius:
+        11px;
+
+    background:
+        var(--verde);
+
+    color:
+        white !important;
+
+    text-decoration:
+        none;
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+
+    white-space:
+        nowrap;
+}
+
+
+/* Si no hay recicladoras registradas, no ocupa espacio */
+#recyclingCenters:empty {
+    display: none;
+}
+
+
+/* =========================================================
+   IMPACTO ODS
+========================================================= */
+
+#odsImpactModal .donacion-modal-header {
+    background:
+        linear-gradient(
+            110deg,
+            rgba(21, 154, 82, .10),
+            rgba(255, 255, 255, .97)
+        );
+}
+
+
+#odsImpactModal .dashboard {
+    gap:
+        16px;
+}
+
+
+#odsImpactModal .dashboard-card {
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        #dbe7e1;
+
+    border-radius:
+        18px;
+
+    background:
+        white;
+
+    box-shadow:
+        0 9px 24px
+        rgba(29, 60, 47, .06);
+}
+
+
+#odsImpactModal .dashboard-card::before {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    inset:
+        0 auto 0 0;
+
+    width:
+        5px;
+
+    background:
+        var(--verde);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .topbar {
+        height:
+            60px;
+
+        min-height:
+            60px;
+
+        padding:
+            0
+            10px;
+    }
+
+
+    .franja-equipo {
+        height:
+            60px;
+
+        right:
+            60px;
+    }
+
+
+    .franja-equipo-contenido {
+        min-height:
+            60px;
+    }
+
+
+    .boton-equipo {
+        min-height:
+            38px;
+
+        padding:
+            0
+            12px;
+
+        font-size:
+            11px;
+    }
+
+
+    .boton-tema {
+        width:
+            38px;
+
+        height:
+            38px;
+    }
+
+
+    .ods-menu-btn {
+        height:
+            38px;
+
+        padding:
+            0
+            11px;
+    }
+
+
+    .equipo-lista {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .eco-encabezado {
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+    }
+
+
+    .eco-maps-btn {
+        width:
+            100%;
+
+        white-space:
+            normal;
+
+        text-align:
+            center;
+    }
+
+}
+
+
+/* =========================================================
+   AJUSTES PUNTUALES SOLICITADOS
+   - Botón del equipo junto a la luna
+   - ODS 9/10/11/12/13 destacados en verde
+   - Botón de Google Maps junto a "Dónde vender cerca"
+========================================================= */
+
+/* Agrupa el botón del equipo y la luna a la derecha. */
+.topbar-acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+
+/* Botón del equipo ya presente en tu HTML. */
+.boton-equipo {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 17px;
+    border: 1px solid rgba(255, 255, 255, .70);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--verde-oscuro);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
+    transition: transform .2s, box-shadow .2s, background .2s;
+}
+
+.boton-equipo:hover {
+    background: #f4fff8;
+    transform: translateY(-1px);
+    box-shadow: 0 9px 18px rgba(0, 0, 0, .15);
+}
+
+
+/* ODS 9, 10, 11, 12 y 13 como pastillas verdes. */
+#odsImpactModal .dashboard-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-width: 72px;
+    margin-bottom: 13px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    box-shadow: 0 7px 15px rgba(21, 154, 82, .20);
+}
+
+
+/* Fila con título y botón de Google Maps en EcoValor. */
+.eco-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 6px 0 14px;
+}
+
+.eco-encabezado h3 {
+    margin: 0;
+}
+
+.eco-maps-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    background: var(--verde);
+    color: #ffffff !important;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 6px 14px rgba(21, 154, 82, .18);
+}
+
+.eco-maps-btn:hover {
+    background: var(--verde-oscuro);
+}
+
+
+/* Cuando no hay centros cargados, no deja espacio vacío. */
+#recyclingCenters:empty {
+    display: none;
+}
+
+
+/* Modal del equipo creado desde JavaScript. */
+.equipo-lista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.equipo-item {
+    position: relative;
+    padding: 18px 18px 18px 50px;
+    border: 1px solid #d7e7de;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(21, 154, 82, .11), #ffffff);
+    color: var(--texto);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.equipo-item::before {
+    content: "✓";
+    position: absolute;
+    left: 17px;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: var(--verde);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+
+@media (max-width: 700px) {
+
+    .topbar-acciones {
+        gap: 8px;
+    }
+
+    .boton-equipo {
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 11px;
+    }
+
+    .eco-encabezado {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .eco-maps-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .equipo-lista {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   MANOS QUE SUMAN - EDITAR / ELIMINAR
+========================================================= */
+
+/* Botón rojo de eliminación. */
+.accion-donacion.boton-eliminar {
+    background:
+        #d95561;
+
+    color:
+        #ffffff;
+}
+
+.accion-donacion.boton-eliminar:hover {
+    background:
+        #b93e49;
+}
+
+
+/* =========================================================
+   SCROLL SIN BARRA VISIBLE
+   Se puede seguir usando rueda del mouse, touchpad y táctil.
+========================================================= */
+
+.donacion-modal-body,
+.modal-contenido {
+    overflow-y:
+        auto;
+
+    /* Firefox */
+    scrollbar-width:
+        none;
+
+    /* Edge / IE antiguo */
+    -ms-overflow-style:
+        none;
+}
+
+
+/* Chrome, Edge, Safari */
+.donacion-modal-body::-webkit-scrollbar,
+.modal-contenido::-webkit-scrollbar {
+    width:
+        0;
+
+    height:
+        0;
+
+    display:
+        none;
+}
+
+
+/* Evita que aparezca una línea de scrollbar en listas internas. */
+.lista-donaciones {
+    scrollbar-width:
+        none;
+
+    -ms-overflow-style:
+        none;
+}
+
+.lista-donaciones::-webkit-scrollbar {
+    width:
+        0;
+
+    height:
+        0;
+
+    display:
+        none;
+}
+/* =========================================================
+   OCULTAR BARRA DE SCROLL GENERAL
+   La página sigue desplazándose normalmente.
+========================================================= */
+
+html,
+body {
+    /* Mantiene el desplazamiento vertical. */
+    overflow-y: auto;
+
+    /* Firefox */
+    scrollbar-width: none;
+
+    /* Edge / Internet Explorer antiguo */
+    -ms-overflow-style: none;
+}
+
+
+/* Chrome, Edge y Safari */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+
+/* =========================================================
+   OCULTAR TAMBIÉN SCROLL DE LOS MODALES
+========================================================= */
+
+.donacion-modal-body,
+.modal-contenido {
+    overflow-y: auto;
+
+    /* Firefox */
+    scrollbar-width: none;
+
+    /* Edge antiguo */
+    -ms-overflow-style: none;
+}
+
+
+/* Chrome, Edge y Safari */
+.donacion-modal-body::-webkit-scrollbar,
+.modal-contenido::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+/* =========================================================
+   INTELIGENCIA SOCIAL - ESTILO RESCATEPY
+========================================================= */
+
+/* Contenedor general del reporte */
+.intel-social-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 8px;
+}
+
+
+/* =========================================================
+   MÉTRICAS SUPERIORES
+========================================================= */
+
+.intel-metricas-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+
+/* Tarjeta de cada métrica */
+.intel-metrica-card {
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f7fbf9
+        );
+
+    border:
+        1px solid
+        #dce9e2;
+
+    border-radius:
+        16px;
+
+    padding:
+        16px;
+
+    box-shadow:
+        0 8px 22px
+        rgba(20, 80, 55, 0.06);
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+
+.intel-metrica-card:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 12px 26px
+        rgba(20, 80, 55, 0.10);
+}
+
+
+/* Texto pequeño superior */
+.intel-metrica-label {
+    display:
+        block;
+
+    color:
+        #718177;
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    margin-bottom:
+        8px;
+}
+
+
+/* Número principal */
+.intel-metrica-valor {
+    display:
+        block;
+
+    color:
+        #17324d;
+
+    font-size:
+        30px;
+
+    font-weight:
+        900;
+
+    line-height:
+        1;
+
+    margin-bottom:
+        8px;
+}
+
+
+/* Texto secundario */
+.intel-metrica-ayuda {
+    color:
+        var(--verde);
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+}
+
+
+.intel-metrica-ayuda.alerta {
+    color:
+        #d95561;
+}
+
+
+.intel-metrica-ayuda.advertencia {
+    color:
+        #d9952f;
+}
+
+
+/* =========================================================
+   PANELES PRINCIPALES
+========================================================= */
+
+.intel-paneles-grid {
+    display:
+        grid;
+
+    grid-template-columns:
+        2fr 1fr;
+
+    gap:
+        16px;
+}
+
+
+/* Panel general */
+.intel-panel {
+    background:
+        #ffffff;
+
+    border:
+        1px solid
+        #dce9e2;
+
+    border-radius:
+        18px;
+
+    padding:
+        18px;
+
+    box-shadow:
+        0 8px 22px
+        rgba(20, 80, 55, 0.05);
+}
+
+
+/* Encabezado de panel */
+.intel-panel-header {
+    margin-bottom:
+        16px;
+}
+
+
+/* Etiqueta verde */
+.intel-panel-etiqueta {
+    display:
+        inline-flex;
+
+    width:
+        fit-content;
+
+    padding:
+        6px 10px;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(21, 154, 82, .11);
+
+    color:
+        var(--verde-oscuro);
+
+    font-size:
+        10px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        .06em;
+
+    margin-bottom:
+        8px;
+}
+
+
+/* Título del panel */
+.intel-panel-header h3 {
+    margin:
+        0;
+
+    color:
+        #17324d;
+
+    font-size:
+        19px;
+
+    font-weight:
+        800;
+}
+
+
+/* =========================================================
+   BALANCE TERRITORIAL
+========================================================= */
+
+.intel-balance-lista {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        16px;
+}
+
+
+.intel-balance-item {
+    padding-bottom:
+        12px;
+
+    border-bottom:
+        1px solid
+        #edf3ef;
+}
+
+
+.intel-balance-item:last-child {
+    border-bottom:
+        none;
+}
+
+
+.intel-balance-top {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        12px;
+
+    margin-bottom:
+        10px;
+}
+
+
+.intel-balance-top strong {
+    color:
+        #17324d;
+
+    font-size:
+        14px;
+
+    font-weight:
+        800;
+}
+
+
+.intel-balance-top span {
+    color:
+        #75867c;
+
+    font-size:
+        11px;
+}
+
+
+/* Agrupa las barras */
+.intel-barras {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        8px;
+}
+
+
+/* Cada línea */
+.intel-barra-linea {
+    display:
+        grid;
+
+    grid-template-columns:
+        90px 1fr 42px;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+}
+
+
+/* Etiquetas */
+.intel-barra-label {
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+}
+
+
+.intel-barra-label.donaciones {
+    color:
+        var(--verde);
+}
+
+
+.intel-barra-label.solicitudes {
+    color:
+        #d95561;
+}
+
+
+/* Fondo de barra */
+.intel-barra-fondo {
+    height:
+        7px;
+
+    border-radius:
+        999px;
+
+    background:
+        #eaf1ed;
+
+    overflow:
+        hidden;
+}
+
+
+/* Relleno */
+.intel-barra-fill {
+    height:
+        100%;
+
+    border-radius:
+        999px;
+}
+
+
+.intel-barra-fill.donaciones {
+    background:
+        linear-gradient(
+            90deg,
+            #159956,
+            #32c777
+        );
+}
+
+
+.intel-barra-fill.solicitudes {
+    background:
+        linear-gradient(
+            90deg,
+            #d95561,
+            #f07481
+        );
+}
+
+
+.intel-barra-numero {
+    text-align:
+        right;
+
+    color:
+        #64766c;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   ZONA PRIORITARIA
+========================================================= */
+
+.intel-zona-prioritaria-box {
+    padding:
+        16px;
+
+    border:
+        1px solid
+        #dce9e2;
+
+    border-radius:
+        14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(21, 154, 82, .08),
+            rgba(255, 255, 255, .95)
+        );
+}
+
+
+.intel-zona-prioritaria-box small {
+    display:
+        block;
+
+    color:
+        #75867c;
+
+    margin-bottom:
+        8px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+}
+
+
+.intel-zona-prioritaria-box strong {
+    display:
+        block;
+
+    color:
+        var(--verde);
+
+    font-size:
+        28px;
+
+    font-weight:
+        900;
+
+    line-height:
+        1.1;
+
+    margin-bottom:
+        12px;
+}
+
+
+.intel-zona-resumen {
+    margin:
+        0;
+
+    color:
+        #53675c;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.6;
+}
+
+
+/* =========================================================
+   TABLA TERRITORIAL
+========================================================= */
+
+.intel-panel-tabla {
+    overflow:
+        hidden;
+}
+
+
+.intel-tabla-wrap {
+    width:
+        100%;
+
+    overflow-x:
+        auto;
+
+    scrollbar-width:
+        none;
+}
+
+
+.intel-tabla-wrap::-webkit-scrollbar {
+    display:
+        none;
+}
+
+
+.intel-tabla {
+    width:
+        100%;
+
+    border-collapse:
+        collapse;
+
+    font-size:
+        13px;
+}
+
+
+.intel-tabla thead {
+    background:
+        #f5f9f7;
+}
+
+
+.intel-tabla th {
+    padding:
+        12px;
+
+    text-align:
+        left;
+
+    color:
+        #718177;
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    border-bottom:
+        1px solid
+        #dce9e2;
+}
+
+
+.intel-tabla td {
+    padding:
+        12px;
+
+    color:
+        #29445d;
+
+    border-bottom:
+        1px solid
+        #edf3ef;
+}
+
+
+.intel-tabla tr:last-child td {
+    border-bottom:
+        none;
+}
+
+
+/* Estado */
+.intel-estado {
+    font-weight:
+        900;
+}
+
+
+.intel-estado.cubierto {
+    color:
+        var(--verde);
+}
+
+
+.intel-estado.atencion {
+    color:
+        #d9952f;
+}
+
+
+.intel-estado.critico {
+    color:
+        #d95561;
+}
+
+
+/* =========================================================
+   MODO OSCURO
+========================================================= */
+
+body.modo-oscuro .intel-metrica-card,
+body.modo-oscuro .intel-panel {
+    background:
+        #10171d;
+
+    border-color:
+        #26333d;
+}
+
+
+body.modo-oscuro .intel-metrica-valor,
+body.modo-oscuro .intel-panel-header h3,
+body.modo-oscuro .intel-balance-top strong,
+body.modo-oscuro .intel-tabla td {
+    color:
+        #eef7f2;
+}
+
+
+body.modo-oscuro .intel-metrica-label,
+body.modo-oscuro .intel-balance-top span,
+body.modo-oscuro .intel-zona-resumen,
+body.modo-oscuro .intel-tabla th {
+    color:
+        #b6c6bd;
+}
+
+
+body.modo-oscuro .intel-zona-prioritaria-box {
+    background:
+        rgba(255, 255, 255, .04);
+
+    border-color:
+        #26333d;
+}
+
+
+body.modo-oscuro .intel-tabla thead {
+    background:
+        #162027;
+}
+
+
+body.modo-oscuro .intel-barra-fondo {
+    background:
+        #27343d;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .intel-metricas-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .intel-paneles-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 620px) {
+
+    .intel-metricas-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .intel-barra-linea {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            5px;
+    }
+
+
+    .intel-barra-numero {
+        text-align:
+            left;
+    }
+
+}
+
+
+/* =========================================================
+   RESCATEPY - AJUSTES FINALES DE COMPATIBILIDAD
+========================================================= */
+
+/*
+   El HTML actual usa .topbar-acciones para colocar
+   "Conocé al equipo" junto al botón de tema.
+*/
+.topbar-acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+
+/*
+   La imagen principal se mantiene completa.
+   Este bloque queda al final para prevalecer
+   sobre estilos antiguos que pudieran quedar arriba.
+*/
+.imagen-principal img,
+.imagen-protagonista img {
+    width: 100%;
+    height: auto;
+    max-height: 520px;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    margin: 0 auto;
+}
+
+
+/*
+   La página y los modales siguen teniendo scroll,
+   pero la barra visual no se muestra.
+*/
+html,
+body,
+.contenido-principal,
+.modal-contenido,
+.donacion-modal-body,
+.lista-donaciones,
+.intel-tabla-wrap {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.contenido-principal::-webkit-scrollbar,
+.modal-contenido::-webkit-scrollbar,
+.donacion-modal-body::-webkit-scrollbar,
+.lista-donaciones::-webkit-scrollbar,
+.intel-tabla-wrap::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+
+/* Tablet */
+@media (max-width: 950px) {
+
+    .imagen-principal img,
+    .imagen-protagonista img {
+        height: auto;
+        max-height: 420px;
+        object-fit: contain;
+    }
+}
+
+
+/* Celular */
+@media (max-width: 650px) {
+
+    .imagen-principal img,
+    .imagen-protagonista img {
+        height: auto;
+        max-height: 320px;
+        object-fit: contain;
+    }
+
+    .topbar-acciones {
+        gap: 8px;
+    }
+}
+
+
+/* =========================================================
+   BOTÓN VOLVER ATRÁS EN MODALES
+========================================================= */
+
+/* Botón común para regresar desde cualquier apartado/modal. */
+.volver-atras-modal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    margin-right: 12px;
+    padding: 0 14px;
+    border: 1px solid rgba(21, 154, 82, .30);
+    border-radius: 11px;
+    background: #e9f6ee;
+    color: var(--verde-oscuro);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background .2s, transform .2s, border-color .2s;
+}
+
+/* Efecto al pasar el mouse. */
+.volver-atras-modal:hover {
+    background: var(--verde);
+    border-color: var(--verde);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Agrupa el botón Volver con el título sin romper la cabecera. */
+.modal-cabecera,
+.donacion-modal-header {
+    gap: 12px;
+}
+
+.modal-cabecera > .volver-atras-modal,
+.donacion-modal-header > .volver-atras-modal {
+    flex-shrink: 0;
+}
+
+/* En celular el botón ocupa menos espacio. */
+@media (max-width: 650px) {
+    .volver-atras-modal {
+        min-height: 34px;
+        margin-right: 4px;
+        padding: 0 10px;
+        font-size: 11px;
+    }
+}
+
+
+/* =========================================================
+   MODO OSCURO GENERAL
+========================================================= */
+
+/* Fondo principal y texto general. */
+body.modo-oscuro {
+    --fondo: #10171d;
+    --blanco: #172129;
+    --texto: #edf5f1;
+    --gris: #b7c4bd;
+    --borde: #2a3942;
+    --verde-claro: #173c2a;
+
+    background: #10171d;
+    color: #edf5f1;
+}
+
+/* Área principal. */
+body.modo-oscuro .contenido-principal {
+    background: #10171d;
+}
+
+/* Menú ODS y sus opciones. */
+body.modo-oscuro .ods-dropdown,
+body.modo-oscuro .ods-menu-btn,
+body.modo-oscuro .boton-equipo,
+body.modo-oscuro .boton-tema {
+    background: #18242c;
+    color: #edf5f1;
+    border-color: #34434b;
+}
+
+body.modo-oscuro .ods-dropdown button {
+    color: #edf5f1;
+}
+
+body.modo-oscuro .ods-dropdown button:hover {
+    background: #214432;
+    color: #ffffff;
+}
+
+/* Modales y formularios. */
+body.modo-oscuro .modal-contenido,
+body.modo-oscuro .donacion-modal,
+body.modo-oscuro .donacion-modal-header,
+body.modo-oscuro .formulario-card,
+body.modo-oscuro .donacion-publicada,
+body.modo-oscuro .organizacion-card,
+body.modo-oscuro .comedor-card,
+body.modo-oscuro .dashboard-card,
+body.modo-oscuro .resultado-validacion {
+    background: #172129;
+    color: #edf5f1;
+    border-color: #2a3942;
+}
+
+body.modo-oscuro .modal-cabecera,
+body.modo-oscuro .donacion-modal-header {
+    border-color: #2a3942;
+}
+
+body.modo-oscuro .modal-cabecera h2,
+body.modo-oscuro .donacion-modal-header h2,
+body.modo-oscuro .organizacion-card h3,
+body.modo-oscuro .comedor-card h3,
+body.modo-oscuro .donacion-publicada h3,
+body.modo-oscuro .campo-donacion label {
+    color: #edf5f1;
+}
+
+/* Inputs y selects en modo oscuro. */
+body.modo-oscuro .campo-donacion input,
+body.modo-oscuro .campo-donacion select,
+body.modo-oscuro .campo-donacion textarea,
+body.modo-oscuro .buscador input {
+    background: #202c34;
+    color: #edf5f1;
+    border-color: #34434b;
+}
+
+body.modo-oscuro .campo-donacion input::placeholder,
+body.modo-oscuro .campo-donacion textarea::placeholder,
+body.modo-oscuro .buscador input::placeholder {
+    color: #87959d;
+}
+
+/* Botones de cerrar y volver. */
+body.modo-oscuro .cerrar-modal,
+body.modo-oscuro .cerrar-donacion,
+body.modo-oscuro .volver-atras-modal {
+    background: #24323a;
+    color: #edf5f1;
+    border-color: #3a4b54;
+}
+
+body.modo-oscuro .volver-atras-modal:hover {
+    background: var(--verde);
+    color: #ffffff;
+}
+
+/* =========================================================
+   INTELIGENCIA SOCIAL - DISEÑO FINAL APROBADO
+   Solo afecta al dashboard generado por app.js.
+========================================================= */
+
+/* Contenedor general del reporte */
+#modalSocial .reporte-social {
+    width: min(1180px, 96vw) !important;
+    max-width: 1180px !important;
+    max-height: 94vh !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    background: #222735 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, .38) !important;
+}
+
+#modalSocial .reporte-dashboard-final {
+    width: 100%;
+    padding: 10px;
+    background: #222735;
+    color: #f4f6fb;
+}
+
+/* Cabecera simple, como en la referencia */
+#modalSocial .reporte-cabecera-simple {
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: #282e3d;
+}
+
+#modalSocial .reporte-cabecera-simple h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+#modalSocial .cerrar-reporte-social {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 5px;
+    background: #303746;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* =========================================================
+   PARTE SUPERIOR
+========================================================= */
+
+#modalSocial .reporte-superior {
+    display: grid;
+    grid-template-columns: minmax(0, .95fr) minmax(360px, 1.45fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#modalSocial .reporte-metricas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+#modalSocial .metrica-dashboard,
+#modalSocial .distribucion-panel,
+#modalSocial .balance-panel,
+#modalSocial .prioridad-panel,
+#modalSocial .resumen-panel {
+    background: #3a3d4a;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+#modalSocial .metrica-dashboard {
+    min-height: 140px;
+    padding: 16px 18px;
+    border-top: 4px solid transparent;
+}
+
+#modalSocial .metrica-dashboard > span {
+    display: block;
+    margin-bottom: 6px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+#modalSocial .metrica-contenido {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+#modalSocial .metrica-contenido strong {
+    color: #fff;
+    font-size: 44px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+#modalSocial .metrica-dashboard small {
+    display: block;
+    margin-top: 13px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#modalSocial .metrica-verde {
+    border-top-color: #38d1bd;
+}
+
+#modalSocial .metrica-verde small {
+    color: #38d1bd;
+}
+
+#modalSocial .metrica-roja {
+    border-top-color: #ff616d;
+}
+
+#modalSocial .metrica-roja small {
+    color: #ff616d;
+}
+
+#modalSocial .metrica-azul {
+    border-top-color: #39aef0;
+}
+
+#modalSocial .metrica-azul small {
+    color: #39aef0;
+}
+
+#modalSocial .metrica-amarilla {
+    border-top-color: #f0b814;
+}
+
+#modalSocial .metrica-amarilla small {
+    color: #f0b814;
+}
+
+/* Mini gráfico decorativo de las tarjetas */
+#modalSocial .mini-barras {
+    height: 48px;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+#modalSocial .mini-barras i {
+    width: 10px;
+    display: block;
+    background: #5a6070;
+}
+
+#modalSocial .mini-barras i:nth-child(1) { height: 18%; }
+#modalSocial .mini-barras i:nth-child(2) { height: 35%; }
+#modalSocial .mini-barras i:nth-child(3) { height: 58%; }
+#modalSocial .mini-barras i:nth-child(4) { height: 82%; }
+
+#modalSocial .metrica-verde .mini-barras i:nth-child(-n+2) { background: #38d1bd; }
+#modalSocial .metrica-roja .mini-barras i:nth-child(-n+2) { background: #ff616d; }
+#modalSocial .metrica-azul .mini-barras i:nth-child(-n+3) { background: #39aef0; }
+
+/* =========================================================
+   DISTRIBUCIÓN TERRITORIAL
+========================================================= */
+
+#modalSocial .distribucion-panel {
+    min-height: 290px;
+    padding: 17px 22px;
+    border-top: 4px solid #9a83f2;
+}
+
+#modalSocial .distribucion-panel h3,
+#modalSocial .balance-panel h3,
+#modalSocial .prioridad-panel h3,
+#modalSocial .resumen-panel h3 {
+    margin: 0 0 16px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+#modalSocial .distribucion-contenido {
+    min-height: 225px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 42px;
+}
+
+#modalSocial .grafico-dona {
+    width: 210px;
+    height: 210px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: conic-gradient(#38d1bd 0deg 180deg, #8a83e6 180deg 360deg);
+}
+
+#modalSocial .grafico-centro {
+    width: 116px;
+    height: 116px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #3a3d4a;
+    text-align: center;
+}
+
+#modalSocial .grafico-centro strong {
+    color: #fff;
+    font-size: 42px;
+    line-height: 1;
+}
+
+#modalSocial .grafico-centro span {
+    margin-top: 4px;
+    color: #cdd2df;
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+#modalSocial .distribucion-leyenda {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#modalSocial .distribucion-item {
+    display: grid;
+    grid-template-columns: 13px auto;
+    align-items: start;
+    gap: 9px;
+}
+
+#modalSocial .distribucion-color {
+    width: 12px;
+    height: 12px;
+    margin-top: 4px;
+    border-radius: 50%;
+}
+
+#modalSocial .distribucion-info strong {
+    display: block;
+    color: #fff;
+    font-size: 15px;
+}
+
+#modalSocial .distribucion-info span {
+    display: block;
+    margin-top: 2px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   PARTE MEDIA
+========================================================= */
+
+#modalSocial .reporte-medio {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(300px, .85fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#modalSocial .balance-panel {
+    padding: 16px 18px 18px;
+    border-top: 4px solid #38d1bd;
+}
+
+#modalSocial .prioridad-panel {
+    padding: 16px 18px 18px;
+    border-top: 4px solid #39aef0;
+}
+
+/* Donaciones vs solicitudes SIN barras horizontales */
+#modalSocial .balance-zonas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+}
+
+#modalSocial .balance-zona {
+    min-height: 145px;
+    padding: 8px 12px 4px;
+}
+
+#modalSocial .balance-zona h4 {
+    margin: 0 0 18px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+#modalSocial .balance-numeros {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+#modalSocial .balance-dato {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+#modalSocial .balance-dato strong {
+    display: block;
+    color: #fff;
+    font-size: 38px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+#modalSocial .balance-dato span {
+    display: block;
+    margin-top: 8px;
+    color: #c4cad6;
+    font-size: 12px;
+}
+
+/* Anula cualquier barra anterior del CSS */
+#modalSocial .intel-barras,
+#modalSocial .intel-barra-linea,
+#modalSocial .intel-barra-fondo,
+#modalSocial .intel-barra-fill,
+#modalSocial .intel-balance-top > span {
+    display: none !important;
+}
+
+/* Zona prioritaria */
+#modalSocial .prioridad-contenido {
+    min-height: 145px;
+    padding: 14px 15px;
+    border: 1px solid #515765;
+    border-radius: 3px;
+    background: #343844;
+}
+
+#modalSocial .prioridad-contenido small {
+    color: #a4aab7;
+    font-size: 11px;
+}
+
+#modalSocial .prioridad-contenido strong {
+    display: block;
+    margin: 7px 0 9px;
+    color: #3dd59a;
+    font-size: 27px;
+    line-height: 1;
+}
+
+#modalSocial .prioridad-contenido p {
+    margin: 0;
+    color: #eef0f5;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   RESUMEN TERRITORIAL
+========================================================= */
+
+#modalSocial .resumen-panel {
+    padding: 13px 14px 16px;
+    border-top: 4px solid #f1775d;
+}
+
+#modalSocial .resumen-panel h3 {
+    margin-bottom: 10px;
+    font-size: 17px;
+}
+
+#modalSocial .tabla-reporte-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#modalSocial .tabla-reporte {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    font-size: 12px;
+}
+
+#modalSocial .tabla-reporte thead {
+    background: #434856;
+}
+
+#modalSocial .tabla-reporte th,
+#modalSocial .tabla-reporte td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #59606f;
+    text-align: left;
+}
+
+#modalSocial .tabla-reporte th {
+    color: #cfd4df;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#modalSocial .tabla-reporte td {
+    color: #fff;
+}
+
+#modalSocial .estado-reporte {
+    display: inline-block;
+    min-width: 66px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+#modalSocial .estado-reporte.cubierto {
+    background: #147656;
+    color: #78efc3;
+}
+
+#modalSocial .estado-reporte.atencion {
+    background: #745b14;
+    color: #ffd966;
+}
+
+#modalSocial .estado-reporte.critico {
+    background: #742f3d;
+    color: #ff9cab;
+}
+
+/* El reporte siempre conserva este estilo oscuro */
+body:not(.modo-oscuro) #modalSocial .reporte-social,
+body:not(.modo-oscuro) #modalSocial .reporte-dashboard-final,
+body:not(.modo-oscuro) #modalSocial .metrica-dashboard,
+body:not(.modo-oscuro) #modalSocial .distribucion-panel,
+body:not(.modo-oscuro) #modalSocial .balance-panel,
+body:not(.modo-oscuro) #modalSocial .prioridad-panel,
+body:not(.modo-oscuro) #modalSocial .resumen-panel {
+    color: #f4f6fb;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    #modalSocial .reporte-superior,
+    #modalSocial .reporte-medio {
+        grid-template-columns: 1fr;
+    }
+
+    #modalSocial .distribucion-contenido {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 620px) {
+    #modalSocial .reporte-metricas,
+    #modalSocial .balance-zonas {
+        grid-template-columns: 1fr;
+    }
+
+    #modalSocial .reporte-cabecera-simple h2 {
+        font-size: 24px;
+    }
+
+    #modalSocial .grafico-dona {
+        width: 180px;
+        height: 180px;
+    }
+
+    #modalSocial .grafico-centro {
+        width: 98px;
+        height: 98px;
+    }
+}
+\n\n/* =========================================================\n   AJUSTE PUNTUAL - INTELIGENCIA SOCIAL\n   Solo afecta a #modalSocial. No modifica otros botones.\n========================================================= */\n\n/* Fondo general oscuro del reporte, igual en ambos temas */\n#modalSocial .reporte-social,\n#modalSocial .reporte-dashboard-final {\n    background: #151c28 !important;\n    color: #f4f6fb !important;\n}\n\n/* Cabecera del reporte */\n#modalSocial .reporte-cabecera-simple {\n    display: grid !important;\n    grid-template-columns: auto 1fr auto !important;\n    align-items: center !important;\n    gap: 16px !important;\n    background: #1d2636 !important;\n}\n\n#modalSocial .reporte-cabecera-simple h2 {\n    color: #ffffff !important;\n    text-align: left !important;\n}\n\n/* Botón exclusivo de Inteligencia social */\n#modalSocial .volver-social {\n    min-height: 38px;\n    padding: 0 14px;\n    border: 1px solid #3a4657;\n    border-radius: 8px;\n    background: #243140;\n    color: #ffffff;\n    font-size: 13px;\n    font-weight: 700;\n    cursor: pointer;\n}\n\n#modalSocial .volver-social:hover {\n    background: #2c3b4b;\n}\n\n/* Tarjetas: solo se oscurece Inteligencia social */\n#modalSocial .metrica-dashboard,\n#modalSocial .distribucion-panel,\n#modalSocial .balance-panel,\n#modalSocial .prioridad-panel,\n#modalSocial .resumen-panel {\n    background: #252f3f !important;\n    color: #ffffff !important;\n}\n\n/* Centro de la dona */\n#modalSocial .grafico-centro {\n    background: #252f3f !important;\n}\n\n/* Zona prioritaria */\n#modalSocial .prioridad-contenido {\n    background: #1f2936 !important;\n    border-color: #3c4858 !important;\n}\n\n/* Tabla */\n#modalSocial .tabla-reporte thead {\n    background: #2d3949 !important;\n}\n\n#modalSocial .tabla-reporte th,\n#modalSocial .tabla-reporte td {\n    color: #f4f6fb !important;\n    border-bottom-color: #475365 !important;\n}\n\n/* Textos secundarios legibles en oscuro */\n#modalSocial .balance-dato span,\n#modalSocial .grafico-centro span,\n#modalSocial .prioridad-contenido p,\n#modalSocial .prioridad-contenido small,\n#modalSocial .tabla-reporte th {\n    color: #c8d0dc !important;\n}\n\n/* En pantallas pequeñas la cabecera se acomoda sin afectar el resto */\n@media (max-width: 620px) {\n    #modalSocial .reporte-cabecera-simple {\n        grid-template-columns: 1fr auto !important;\n    }\n\n    #modalSocial .volver-social {\n        grid-column: 1 / -1;\n        width: max-content;\n    }\n}\n
+
+/* =========================================================
+   CORRECCIÓN PUNTUAL - TEXTO DE BOTONES EN MODO OSCURO
+   Solo mejora el contraste de botones con fondo claro.
+   No modifica fondos, hover, animaciones ni efectos.
+========================================================= */
+
+/* Botón Limpiar: mantiene su fondo claro y usa texto oscuro. */
+body.modo-oscuro .limpiar-validacion {
+    color: #172129 !important;
+}
+
+/* Botones secundarios: Ver zona, Ver ubicación, Editar, etc. */
+body.modo-oscuro .accion-donacion.secundaria {
+    color: #172129 !important;
+}
+
+/* Botones secundarios de tarjetas institucionales. */
+body.modo-oscuro .boton-card.secundario {
+    color: #172129 !important;
+}
+
+/* Filtros claros de Alimentos disponibles. */
+body.modo-oscuro .filtro-donacion:not(.activo) {
+    color: #172129 !important;
+}
+
+/* Filtros claros de Manos que suman. */
+body.modo-oscuro .filtro-ayuda:not(.activo) {
+    color: #172129 !important;
+}
+
+/* Los botones activos conservan texto blanco. */
+body.modo-oscuro .filtro-donacion.activo,
+body.modo-oscuro .filtro-ayuda.activo {
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   CORRECCIÓN DEFINITIVA - BOTONES EN MODO OSCURO
+   Mantiene tamaños, hover y animaciones.
+   Solo corrige fondo/texto para que sean legibles.
+========================================================= */
+
+/* Botón Limpiar */
+body.modo-oscuro button.limpiar-validacion {
+    background: #2a3740 !important;
+    color: #ffffff !important;
+    border: 1px solid #465761 !important;
+}
+
+/* Hover del botón Limpiar */
+body.modo-oscuro button.limpiar-validacion:hover {
+    background: #344650 !important;
+    color: #ffffff !important;
+}
+
+/* Botones secundarios: Ver ubicación, Ver zona, Editar, etc. */
+body.modo-oscuro button.accion-donacion.secundaria,
+body.modo-oscuro a.accion-donacion.secundaria {
+    background: #2a3740 !important;
+    color: #ffffff !important;
+    border: 1px solid #465761 !important;
+}
+
+/* Hover de botones secundarios */
+body.modo-oscuro button.accion-donacion.secundaria:hover,
+body.modo-oscuro a.accion-donacion.secundaria:hover {
+    background: #344650 !important;
+    color: #ffffff !important;
+}
+
+/* Filtros no activos */
+body.modo-oscuro button.filtro-donacion:not(.activo),
+body.modo-oscuro button.filtro-ayuda:not(.activo) {
+    background: #2a3740 !important;
+    color: #ffffff !important;
+    border-color: #465761 !important;
+}
+
+/* Hover de filtros no activos */
+body.modo-oscuro button.filtro-donacion:not(.activo):hover,
+body.modo-oscuro button.filtro-ayuda:not(.activo):hover {
+    background: #344650 !important;
+    color: #ffffff !important;
+}
+
+/* Filtros activos siguen verdes */
+body.modo-oscuro button.filtro-donacion.activo,
+body.modo-oscuro button.filtro-ayuda.activo {
+    background: var(--verde) !important;
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   CORRECCIÓN PUNTUAL - IMPACTO ODS EN MODO OSCURO
+   Evita tarjetas blancas con texto casi invisible.
+========================================================= */
+
+/* Cabecera del modal Impacto ODS */
+body.modo-oscuro #odsImpactModal .donacion-modal-header {
+    background: #202c34 !important;
+    border-color: #34434b !important;
+}
+
+/* Título RESCATEPY */
+body.modo-oscuro #odsImpactModal .donacion-modal-header h2 {
+    color: #f3f7f5 !important;
+}
+
+/* Tarjetas ODS */
+body.modo-oscuro #odsImpactModal .dashboard-card {
+    background: #172129 !important;
+    color: #edf5f1 !important;
+    border-color: #34434b !important;
+}
+
+/* Títulos dentro de las tarjetas */
+body.modo-oscuro #odsImpactModal .dashboard-card strong {
+    color: #f3f7f5 !important;
+}
+
+/* Descripciones dentro de las tarjetas */
+body.modo-oscuro #odsImpactModal .dashboard-card p {
+    color: #c3d0ca !important;
+}
+
+/* Etiqueta ODS 9, ODS 10, etc. */
+body.modo-oscuro #odsImpactModal .dashboard-etiqueta {
+    background: #159a52 !important;
+    color: #ffffff !important;
+}
+
+/* Etiqueta NUESTRO IMPACTO */
+body.modo-oscuro #odsImpactModal .donacion-etiqueta {
+    color: #39d17d !important;
+}
+
+
+/* =========================================================
+   AJUSTE PANTALLA PRINCIPAL - SIN SCROLL EN ESCRITORIO
+   Mantiene visibles la imagen y los 3 botones.
+   No modifica los modales ni los efectos de los botones.
+========================================================= */
+
+@media (min-width: 701px) {
+
+    /* La página principal queda limitada al alto de la pantalla. */
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden !important;
+    }
+
+    /* El área debajo de la barra ocupa solo el espacio disponible. */
+    .contenido-principal {
+        height: calc(100vh - 64px) !important;
+        min-height: 0 !important;
+        padding: 0 0 10px !important;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+
+        overflow: hidden !important;
+    }
+
+    /* La imagen usa el espacio restante sin empujar los botones. */
+    .imagen-principal,
+    .imagen-protagonista {
+        flex: 1 1 auto;
+        min-height: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        overflow: hidden;
+    }
+
+    /* Sobrescribe el estilo inline del HTML. */
+    .imagen-principal img,
+    .imagen-protagonista img {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: none !important;
+
+        object-fit: contain !important;
+        object-position: center !important;
+
+        display: block;
+        margin: 0 auto !important;
+    }
+
+    /* Los 3 botones permanecen siempre visibles. */
+    .acciones-principales {
+        flex: 0 0 auto;
+
+        width: calc(100% - 40px);
+        max-width: 1250px;
+
+        margin: 10px auto 0 !important;
+        gap: 12px;
+    }
+
+    /* Mantiene la altura original de los botones, pero compacta el bloque. */
+    .boton-principal,
+    .accion {
+        min-height: 46px;
+    }
+}
+
+
+/* En celulares se permite desplazamiento normal. */
+@media (max-width: 700px) {
+
+    html,
+    body {
+        height: auto;
+        overflow-y: auto !important;
+    }
+
+    .contenido-principal {
+        height: auto !important;
+        min-height: calc(100vh - 64px) !important;
+        overflow: visible !important;
+    }
+
+    .imagen-principal img,
+    .imagen-protagonista img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 320px !important;
+    }
+}
+
+
+/* =========================================================
+   AJUSTE EXTRA - LA IMAGEN LLENA LOS COSTADOS IZQUIERDO Y DERECHO
+========================================================= */
+@media (min-width: 701px) {
+    .imagen-principal,
+    .imagen-protagonista {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        overflow: hidden !important;
+    }
+
+    .imagen-principal img,
+    .imagen-protagonista img {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: cover !important;
+        object-position: center center !important;
+        margin: 0 !important;
+        background: transparent !important;
+    }
+}
+
+
+/* =========================================================
+   LOGIN, SESIÓN Y NOTIFICACIONES
+   Se agregan sin cambiar el diseño de los apartados existentes.
+========================================================= */
+.boton-cuenta,
+.boton-notificacion,
+.boton-salir {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 10px;
+    padding: 9px 12px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-notificacion {
+    min-width: 52px;
+}
+
+#notificationCount:not(:empty) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    margin-left: 3px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #d62828;
+    color: #fff;
+    font-size: 0.75rem;
+}
+
+.auth-modal {
+    max-width: 520px;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.auth-tab {
+    border: 1px solid #d9e2dd;
+    border-radius: 10px;
+    padding: 10px;
+    background: transparent;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.auth-tab.activo {
+    background: var(--verde);
+    border-color: var(--verde);
+    color: #fff;
+}
+
+.auth-form {
+    display: grid;
+    gap: 14px;
+}
+
+.auth-message {
+    min-height: 24px;
+    margin-top: 14px;
+    font-weight: 600;
+}
+
+.notificacion-lista {
+    display: grid;
+    gap: 10px;
+}
+
+.notificacion-item {
+    display: grid;
+    gap: 5px;
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #dbe5e0;
+    border-radius: 12px;
+    background: #f4fbf7;
+    text-align: left;
+    cursor: pointer;
+}
+
+.notificacion-item.leida {
+    opacity: 0.68;
+    background: transparent;
+}
+
+.notificacion-item span,
+.notificacion-item small {
+    display: block;
+}
+
+.notificacion-vacia {
+    padding: 18px 0;
+    text-align: center;
+}
+
+body.modo-oscuro .auth-tab,
+body.modo-oscuro .notificacion-item {
+    border-color: #34434b;
+    color: #edf5f1;
+}
+
+body.modo-oscuro .notificacion-item {
+    background: #172129;
+}
+
+body.modo-oscuro .auth-tab:not(.activo) {
+    background: #2a3740;
+}
+
+@media (max-width: 700px) {
+    .topbar-acciones {
+        gap: 6px;
+    }
+
+    .boton-cuenta,
+    .boton-notificacion,
+    .boton-salir {
+        padding: 7px 8px;
+        font-size: 0.78rem;
+    }
+}
