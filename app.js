@@ -3781,6 +3781,15 @@ abrirAyudarBtn?.addEventListener(
             null;
 
         helpForm?.reset();
+       // Vuelve al inicio del formulario al abrir el modal
+const cuerpoAyuda =
+    helpModal?.querySelector(
+        ".donacion-modal-body"
+    );
+
+if (cuerpoAyuda) {
+    cuerpoAyuda.scrollTop = 0;
+}
 
         const botonGuardarAyuda =
             helpForm
