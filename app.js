@@ -3854,9 +3854,10 @@ helpForm?.addEventListener(
                 )?.value || 0
             );
 
-        const city =
-            obtenerElemento(
-                       )?.value.trim() || "";
+       const city =
+    obtenerElemento(
+        "helpCity"
+    )?.value.trim() || "";
 
         if (
             !donorName
