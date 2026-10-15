@@ -147,6 +147,21 @@ y control de permisos.
 
 ---
 
+## ☁️ Despliegue e infraestructura
+
+RescatePY se encuentra desplegado en servicios en la nube:
+
+🚀 **Render**  
+Aloja y mantiene en ejecución la aplicación web y el backend desarrollado con Node.js y Express.
+
+☁️ **Oracle Cloud Infrastructure (OCI)**  
+Aloja la base de datos Oracle utilizada por el sistema.
+
+🐙 **GitHub**  
+Se utiliza para el control de versiones y almacenamiento del código fuente.
+
+> 💡 **Nota:** La aplicación puede demorar algunos segundos en cargar inicialmente debido al tiempo de activación del servicio alojado en Render.
+---
 ## 🧩 Arquitectura
 
 ```text
@@ -161,16 +176,4 @@ Node.js + Express
 Oracle Database
 
 
-## ☁️ Despliegue e infraestructura
 
-RescatePY está publicado en la nube utilizando:
-
-- **Render** para desplegar y mantener en ejecución la aplicación web y el backend desarrollado con Node.js y Express.
-- **Oracle Cloud Infrastructure (OCI)** para alojar la base de datos Oracle utilizada por el sistema.
-- **GitHub** para el control de versiones y almacenamiento del código fuente.
-
-El proyecto puede accederse públicamente desde:
-
-[🌐 Ver RescatePY en línea](https://rescatepy.onrender.com/)
-
-> **Nota:** La aplicación puede demorar algunos segundos en cargar inicialmente, debido al tiempo de activación del servicio alojado en Render.
