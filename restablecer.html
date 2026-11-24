@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Restablecer contraseña | RescatePY</title>
+
+    <style>
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f1f7f3;
+        }
+
+        /* Contenedor principal */
+        .contenedor {
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #159a52;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .descripcion {
+            color: #666;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        /* Campos del formulario */
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: 2px solid #159a52;
+            border-color: #159a52;
+        }
+
+        /* Botón principal */
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 22px;
+            border: none;
+            border-radius: 8px;
+            background: #159a52;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #107d42;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Mensajes del sistema */
+        #mensaje {
+            margin-top: 18px;
+            text-align: center;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .volver {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #159a52;
+            text-decoration: none;
+        }
+
+        .volver:hover {
+            text-decoration: underline;
+        }
+
+        .oculto {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="contenedor">
+
+        <h1>RescatePY</h1>
+
+        <p class="descripcion">
+            Restablecimiento de contraseña.
+            Ingresá tu nueva contraseña para recuperar el acceso a tu cuenta.
+        </p>
+
+        <!-- Formulario para cambiar contraseña -->
+        <form id="formRestablecer">
+
+            <label for="password">
+                Nueva contraseña
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                minlength="8"
+                maxlength="128"
+                autocomplete="new-password"
+                placeholder="Mínimo 8 caracteres"
+                required
+            >
+
+            <label for="confirmarPassword">
+                Confirmar contraseña
+            </label>
+
+            <input
+                type="password"
+                id="confirmarPassword"
+                minlength="8"
+                maxlength="128"
+                autocomplete="new-password"
+                placeholder="Repetí tu contraseña"
+                required
+            >
+
+            <button type="submit" id="btnRestablecer">
+                Cambiar contraseña
+            </button>
+
+        </form>
+
+        <!-- Respuesta del backend -->
+        <p id="mensaje" role="status" aria-live="polite"></p>
+
+        <a href="index.html" class="volver">
+            Volver al inicio de RescatePY
+        </a>
+
+    </main>
+
+    <script>
+        // Obtener el token enviado en el enlace del correo.
+        const parametros = new URLSearchParams(window.location.search);
+        const token = parametros.get("token");
+
+        const formulario = document.getElementById("formRestablecer");
+        const mensaje = document.getElementById("mensaje");
+        const boton = document.getElementById("btnRestablecer");
+
+        // Verificar que el enlace tenga un token válido en formato.
+        if (!token || !/^[a-f0-9]{64}$/i.test(token)) {
+            formulario.classList.add("oculto");
+            mensaje.textContent = "El enlace no es válido o está incompleto.";
+        }
+
+        // Procesar el cambio de contraseña.
+        formulario.addEventListener("submit", async (evento) => {
+            evento.preventDefault();
+
+            const password = document.getElementById("password").value;
+            const confirmar = document.getElementById("confirmarPassword").value;
+
+            // Comprobar coincidencia.
+            if (password !== confirmar) {
+                mensaje.textContent = "Las contraseñas no coinciden.";
+                return;
+            }
+
+            if (password.length < 8 || password.length > 128) {
+                mensaje.textContent = "La contraseña debe tener entre 8 y 128 caracteres.";
+                return;
+            }
+
+            try {
+                boton.disabled = true;
+                boton.textContent = "Procesando...";
+
+                // Enviar token y contraseña al backend.
+                const respuesta = await fetch("/api/auth/restablecer", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        password: password
+                    })
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(datos.mensaje || "No se pudo cambiar la contraseña.");
+                }
+
+                mensaje.textContent = datos.mensaje;
+                mensaje.style.color = "#159a52";
+
+                // Evitar reutilizar el enlace.
+                formulario.reset();
+                formulario.classList.add("oculto");
+
+            } catch (error) {
+                mensaje.textContent = error.message;
+                mensaje.style.color = "#c0392b";
+
+            } finally {
+                boton.disabled = false;
+                boton.textContent = "Cambiar contraseña";
+            }
+        });
+    </script>
+
+</body>
+</html>
