@@ -2599,9 +2599,16 @@
                         <label for="loginPassword">Contraseña</label>
                         <input id="loginPassword" type="password" required placeholder="Tu contraseña">
                     </div>
-                    <button id="forgotPasswordBtn" type="button">
+
+                    <!-- Solicita el enlace para recuperar la contraseña. -->
+                    <button
+                        id="forgotPasswordBtn"
+                        type="button"
+                        style="display:block;margin:10px 0 14px auto;background:transparent;border:0;color:#159a52;cursor:pointer;font:inherit;text-decoration:underline;">
                         ¿Olvidaste tu contraseña?
-                    </button><button class="ejecutar-validacion" type="submit">Iniciar sesión</button>
+                    </button>
+
+                    <button class="ejecutar-validacion" type="submit">Iniciar sesión</button>
                 </form>
 
                 <form id="registerForm" class="auth-form campo-oculto">
