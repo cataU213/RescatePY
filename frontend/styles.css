@@ -5734,3 +5734,49 @@ body.modo-oscuro .auth-tab:not(.activo) {
         font-size: 0.78rem;
     }
 }
+
+/* Panel operativo de organizaciones. */
+.panel-organizacion { width: min(680px, 94vw); max-height: 85vh; overflow: auto; border: 1px solid #3c5154; border-radius: 18px; padding: 22px; color: #f0f5f3; background: #17232a; }
+.panel-organizacion::backdrop { background: #101b22ad; }
+.panel-organizacion header { display: flex; justify-content: space-between; align-items: center; }
+.panel-organizacion h2 { font-size: 1.4rem; font-weight: 700; }
+.panel-organizacion h3 { margin-top: 18px; font-weight: 700; }
+.panel-organizacion button { background: #168d4b; color: white; border-radius: 8px; padding: 9px 13px; margin: 5px; }
+.panel-organizacion article, .org-metricas strong { border: 1px solid #3c5154; border-radius: 10px; padding: 12px; margin-top: 10px; }
+.org-metricas { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin: 10px 0; }
+
+/* Formulario de necesidades: mismo aspecto del panel de organizaciones. */
+.panel-necesidades form { display: grid; gap: 10px; margin: 12px 0; }
+.panel-necesidades label { display: grid; gap: 4px; font-weight: 600; }
+.panel-necesidades input, .panel-necesidades select, .panel-necesidades textarea { width: 100%; box-sizing: border-box; border: 1px solid #526668; border-radius: 8px; padding: 9px; background: #263740; color: #fff; }
+.panel-necesidades article p { overflow-wrap: anywhere; }
+.panel-necesidades button:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Coordinación y confirmaciones: conserva el tema y mejora contraste del receptor. */
+.donacion-receptor { color:#172b24; }
+.donacion-receptor p,.donacion-receptor strong { color:#172b24; }
+.panel-entregas { width:min(720px,94vw); max-height:90vh; overflow:auto; }
+.panel-entregas article { padding:14px; margin:12px 0; border:1px solid #789388; border-radius:12px; }
+.panel-entregas button { margin:6px; padding:10px 14px; border-radius:8px; background:#168d4b; color:white; }
+.panel-entregas button.entrega-no { background:#a52c36; }
+.panel-entregas label { display:block; margin:10px 0; }
+.panel-entregas input,#fechaRetiro { display:block; padding:10px; border:1px solid #789388; border-radius:8px; background:#fff; color:#172b24; }
+.panel-entregas::backdrop { background:rgba(0,0,0,.72); }
+
+/* Aviso de retiro no modal: no intercepta el resto de la aplicación. */
+.aviso-entregas { position:fixed; right:16px; bottom:16px; z-index:10000; width:min(430px,calc(100vw - 32px)); max-height:70vh; overflow:auto; padding:16px; background:#17232a; color:#f0f5f3; border:1px solid #789388; border-radius:14px; box-shadow:0 8px 24px #0005; }
+.aviso-entregas[hidden] { display:none !important; }
+.aviso-entregas header { display:flex; justify-content:space-between; align-items:center; }
+.aviso-entregas article { padding:10px; border:1px solid #789388; border-radius:8px; margin:8px 0; }
+.aviso-entregas button { margin:5px; padding:9px 12px; border-radius:8px; background:#168d4b; color:white; }
+.aviso-entregas button.entrega-no { background:#a52c36; }
+dialog.panel-entregas { margin:auto; }
+
+/* Paneles centrados y reporte agregado únicamente en Inteligencia social. */
+dialog.panel-organizacion { margin:auto; max-width:calc(100vw - 32px); box-sizing:border-box; }
+.impacto-entregas { padding:16px; background:#292f3d; color:#fff; border-radius:8px; margin:10px 0; }
+.impacto-entregas h3 { font-size:1.25rem; margin-bottom:12px; }
+.impacto-tarjetas { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+.impacto-tarjetas article { padding:14px; background:#393d4b; border-top:3px solid #35c8b5; display:grid; gap:8px; min-height:85px; }
+.impacto-tarjetas strong { font-size:1.8rem; min-height:2rem; color:#fff; }
+.impacto-entregas small,.impacto-entregas p { display:block; margin-top:12px; }

@@ -14,7 +14,16 @@ const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 
+// Funciones criptográficas para hashes y tokens seguros.
 const crypto = require("crypto");
+
+// Servicio de consulta oficial del Registro RE del INAN.
+const {
+    consultarRegistroRE,
+    normalizarRUC,
+    normalizarNombre
+} = require("./dinavisa-service");
+
 
 // Envío de correo mediante Gmail API (HTTPS), sin SMTP.
 
@@ -236,7 +245,7 @@ app.use(express.json());
 
 // Publica el frontend desde el mismo servidor.
 
-app.use(express.static(path.join(__dirname, "..")));
+app.use(express.static(path.join(__dirname, "..", "frontend")));
 
 // =========================================================
 
@@ -502,9 +511,14 @@ async function obtenerDonacionCompleta(id) {
 
 // =========================================================
 
+
+// =========================================================
 // ESTADO
 
 // =========================================================
+
+const entregas = require("./entregas");
+entregas.instalarEntregas(app, { autenticar, obtenerTodos, obtenerConexion });
 
 app.get("/api/estado", async (req, res) => {
 
@@ -546,291 +560,451 @@ app.get("/api/estado", async (req, res) => {
 
 // =========================================================
 
+
+// Evita que dos solicitudes simultáneas cambien el mismo expediente.
+const registrosEnCurso = new Set();
 app.post("/api/auth/registro", async (req, res) => {
+    let conexion;
+    let usuarioId = null;
+    let correoBloqueado = null;
+    let cuentaReutilizada = false;
 
     try {
+        const nombre = String(req.body.nombre || "").trim();
+        const email = String(req.body.email || "").trim().toLowerCase();
+        const password = String(req.body.password || "");
+        const tipoCuenta = String(req.body.tipoCuenta || "DONANTE").trim().toUpperCase();
 
-        const nombre =
+        const nombreOrganizacion = String(req.body.nombreOrganizacion || "").trim();
+        const tipoOrganizacion = String(req.body.tipoOrganizacion || "").trim();
+        const representante = String(req.body.representante || nombre).trim();
+        const ciRepresentante = String(req.body.ciRepresentante || "").trim();
+        const ruc = String(req.body.ruc || "").trim();
+        const telefono = String(req.body.telefono || "").trim();
+        const departamento = String(req.body.departamento || "").trim();
+        const distrito = String(req.body.distrito || "").trim();
+        const direccion = String(req.body.direccion || "").trim();
+        const comensales = Number(req.body.comensales);
 
-            String(req.body.nombre || "").trim();
-
-        const email =
-
-            String(req.body.email || "")
-
-                .trim()
-
-                .toLowerCase();
-
-        const password =
-
-            String(req.body.password || "");
 
         if (!nombre || !email || password.length < 6) {
-
             return res.status(400).json({
-
-                mensaje:
-
-                    "Completá nombre, email y una contraseña de al menos 6 caracteres."
-
+                mensaje: "Completá nombre, correo y contraseña."
             });
+        }
+
+        if (!["DONANTE", "ORGANIZACION"].includes(tipoCuenta)) {
+            return res.status(400).json({
+                mensaje: "Tipo de cuenta inválido."
+            });
+        }
+
+        if (tipoCuenta === "ORGANIZACION") {
+            if (
+                !nombreOrganizacion ||
+                !tipoOrganizacion ||
+                !ruc ||
+                !representante ||
+                !ciRepresentante ||
+                !telefono ||
+                !departamento ||
+                !distrito ||
+                !direccion ||
+                !Number.isSafeInteger(comensales) ||
+                comensales <= 0
+            ) {
+                return res.status(400).json({
+                    mensaje: "Completá todos los datos institucionales, incluido el RUC."
+                });
+            }
+
 
         }
 
-        const existe = await obtenerUno(
+        if (registrosEnCurso.has(email)) {
+            return res.status(409).json({ mensaje: "Ya hay un registro en proceso para ese correo." });
+        }
+        registrosEnCurso.add(email);
+        correoBloqueado = email;
 
-            `
+        // Resultado de la consulta oficial del INAN.
+        let consultaINAN = null;
+        let estadoOrganizacion = "PENDIENTE";
 
-                SELECT id
+        if (tipoCuenta === "ORGANIZACION") {
 
-                FROM usuarios
+            try {
 
-                WHERE email = :email
+                // Consultar los registros oficiales utilizando RUC y razón social.
+                consultaINAN = await consultarRegistroRE({
+                    ruc,
+                    razonSocial: nombreOrganizacion
+                });
 
-            `,
+            } catch (error) {
 
-            {
+                // Si la fuente oficial no responde, no se aprueba el registro.
+                console.error("Error consultando INAN:", error.message);
 
-                email
-
+                return res.status(503).json({
+                    mensaje: "No se pudo consultar el registro oficial. Intentá nuevamente."
+                });
             }
 
-        );
+            // Recuperar los registros encontrados.
+            const registros = Array.isArray(consultaINAN?.registros)
+                ? consultaINAN.registros
+                : [];
 
-        if (existe) {
+            // Normalizar los datos para evitar diferencias de formato.
+            const rucBuscado = normalizarRUC(ruc);
+            const nombreBuscado = normalizarNombre(nombreOrganizacion);
 
-            return res.status(409).json({
+            // Exigir coincidencia de RUC, razón social, estado y vigencia.
+            const registroCoincidente = registros.some(registro => {
 
-                mensaje: "Ese email ya está registrado."
-
+                return (
+                    normalizarRUC(registro.ruc) === rucBuscado &&
+                    normalizarNombre(registro.razonSocial) === nombreBuscado &&
+                    registro.coincideRazonSocial === true &&
+                    registro.activo === true &&
+                    registro.vigente === true &&
+                    registro.valido === true
+                );
             });
 
+            // La consulta oficial debe confirmar expresamente la coincidencia.
+            const verificacionCorrecta =
+                consultaINAN?.verificado === true &&
+                consultaINAN.estado === "APROBADO" &&
+                registroCoincidente;
+
+            // Activación por consulta RE, sin OCR ni afirmación de validación municipal.
+            estadoOrganizacion = verificacionCorrecta ? "ACTIVA" : "PENDIENTE";
+
+            // Preparar la respuesta de la consulta oficial.
+            consultaINAN = {
+                verificado: verificacionCorrecta,
+                estado: verificacionCorrecta ? "APROBADO" : "RECHAZADO",
+                motivo: verificacionCorrecta
+                    ? "RUC, razón social y registro RE confirmados por INAN."
+                    : "No se encontró un registro RE coincidente, activo y vigente.",
+                registros,
+                fuente: consultaINAN?.fuente || null
+            };
         }
 
-        // Nunca guardamos la contraseña en texto plano.
+        // Crear cuenta nueva o reutilizar la cuenta institucional pendiente.
+        const passwordHash = await bcrypt.hash(password, 10);
+        const estadoCuentaInicial = tipoCuenta === "ORGANIZACION" ? estadoOrganizacion : "ACTIVA";
 
-        const passwordHash =
+        conexion = await obtenerConexion();
 
-            await bcrypt.hash(password, 10);
-
-        const resultado = await ejecutar(
-
+        const existe = await conexion.execute(
             `
-
-                INSERT INTO usuarios (
-
-                    nombre,
-
-                    email,
-
-                    password_hash,
-
-                    creado_en
-
-                )
-
-                VALUES (
-
-                    :nombre,
-
-                    :email,
-
-                    :passwordHash,
-
-                    SYSTIMESTAMP
-
-                )
-
-                RETURNING id INTO :id
-
+                SELECT ID, PASSWORD_HASH, TIPO_CUENTA, ESTADO_CUENTA
+                FROM USUARIOS
+                WHERE LOWER(EMAIL) = :email FOR UPDATE
             `,
-
-            {
-
-                nombre,
-
-                email,
-
-                passwordHash,
-
-                id: {
-
-                    dir: oracledb.BIND_OUT,
-
-                    type: oracledb.NUMBER
-
-                }
-
-            }
-
+            { email }
         );
 
-        const usuarioId =
+        if (existe.rows.length > 0) {
+            const usuarioExistente = existe.rows[0];
 
-            resultado.outBinds.id[0];
-
-        res.status(201).json({
-
-            mensaje: "Usuario registrado correctamente.",
-
-            usuario: {
-
-                id: usuarioId,
-
-                nombre,
-
-                email
-
+            // Un correo de donante o de otro tipo no se convierte en comedor.
+            if (
+                tipoCuenta !== "ORGANIZACION" ||
+                String(usuarioExistente.TIPO_CUENTA || "").toUpperCase() !== "ORGANIZACION"
+            ) {
+                return res.status(409).json({
+                    mensaje: "Ese correo ya pertenece a otra cuenta."
+                });
             }
 
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        if (error && error.errorNum === 1) {
-
-            return res.status(409).json({
-
-                mensaje: "Ese email ya está registrado."
-
-            });
-
-        }
-
-        res.status(500).json({
-
-            mensaje: "No se pudo registrar el usuario."
-
-        });
-
-    }
-
-});
-
-app.post("/api/auth/login", async (req, res) => {
-
-    try {
-
-        const email =
-
-            String(req.body.email || "")
-
-                .trim()
-
-                .toLowerCase();
-
-        const password =
-
-            String(req.body.password || "");
-
-        const usuario = await obtenerUno(
-
-            `
-
-                SELECT
-
-                    id,
-
-                    nombre,
-
-                    email,
-
-                    password_hash
-
-                FROM usuarios
-
-                WHERE email = :email
-
-            `,
-
-            {
-
-                email
-
-            }
-
-        );
-
-        if (
-
-            !usuario
-
-            ||
-
-            !(await bcrypt.compare(
-
+            // Solo el titular que conoce la contraseña puede reintentar el expediente.
+            const passwordCorrecta = await bcrypt.compare(
                 password,
+                usuarioExistente.PASSWORD_HASH
+            );
 
-                usuario.PASSWORD_HASH
+            if (!passwordCorrecta) {
+                return res.status(401).json({
+                    mensaje: "Ingresá la contraseña original de la cuenta para reintentar el registro."
+                });
+            }
 
-            ))
+            usuarioId = Number(usuarioExistente.ID);
 
-        ) {
+            if (usuarioExistente.ESTADO_CUENTA === "ACTIVA") {
+                return res.status(409).json({ mensaje: "Esta cuenta ya existe. Iniciá sesión con tu correo y contraseña." });
+            }
+            if (usuarioExistente.ESTADO_CUENTA !== "PENDIENTE") {
+                return res.status(403).json({ mensaje: "La cuenta no admite reintentos." });
+            }
 
-            return res.status(401).json({
+            // Reutilizar la cuenta y actualizar los datos declarados, sin duplicar el email.
+            await conexion.execute(
+                `
+                    UPDATE USUARIOS
+                    SET NOMBRE = :nombre,
+                        ESTADO_CUENTA = :estadoCuenta
+                    WHERE ID = :usuarioId
+                `,
+                { nombre, usuarioId, estadoCuenta: estadoCuentaInicial },
+                { autoCommit: false }
+            );
 
-                mensaje: "Email o contraseña incorrectos."
+            const organizacionExistente = await conexion.execute(
+                `SELECT ID FROM ORGANIZACIONES WHERE USUARIO_ID = :usuarioId`,
+                { usuarioId }
+            );
 
-            });
+            if (organizacionExistente.rows.length > 0) {
+                await conexion.execute(
+                    `
+                        UPDATE ORGANIZACIONES
+                        SET NOMBRE_ORGANIZACION = :nombreOrganizacion,
+                            TIPO_ORGANIZACION = :tipoOrganizacion,
+                            RUC = :ruc,
+                            REPRESENTANTE = :representante,
+                            CI_REPRESENTANTE = :ciRepresentante,
+                            TELEFONO = :telefono,
+                            DEPARTAMENTO = :departamento,
+                            DISTRITO = :distrito,
+                            DIRECCION = :direccion,
+                            COMENSALES = :comensales,
+                            ESTADO = :estadoOrganizacion
+                        WHERE USUARIO_ID = :usuarioId
+                    `,
+                    {
+                        usuarioId,
+                        nombreOrganizacion,
+                        tipoOrganizacion,
+                        ruc: ruc || null,
+                        representante,
+                        ciRepresentante,
+                        telefono,
+                        departamento,
+                        distrito,
+                        direccion,
+                        comensales,
+                        estadoOrganizacion
+                    },
+                    { autoCommit: false }
+                );
+            } else {
+                await conexion.execute(
+                    `
+                        INSERT INTO ORGANIZACIONES (
+                            USUARIO_ID, NOMBRE_ORGANIZACION, TIPO_ORGANIZACION, RUC,
+                            REPRESENTANTE, CI_REPRESENTANTE, TELEFONO, DEPARTAMENTO,
+                            DISTRITO, DIRECCION, COMENSALES, ESTADO, CREADO_EN
+                        )
+                        VALUES (
+                            :usuarioId, :nombreOrganizacion, :tipoOrganizacion, :ruc,
+                            :representante, :ciRepresentante, :telefono, :departamento,
+                            :distrito, :direccion, :comensales, :estadoOrganizacion, SYSTIMESTAMP
+                        )
+                    `,
+                    {
+                        usuarioId,
+                        nombreOrganizacion,
+                        tipoOrganizacion,
+                        ruc: ruc || null,
+                        representante,
+                        ciRepresentante,
+                        telefono,
+                        departamento,
+                        distrito,
+                        direccion,
+                        comensales,
+                        estadoOrganizacion
+                    },
+                    { autoCommit: false }
+                );
+            }
 
+            cuentaReutilizada = true;
+
+        } else {
+            // Registro inicial: crear el usuario y su organización en la misma transacción.
+            const resultadoUsuario = await conexion.execute(
+                `
+                    INSERT INTO USUARIOS (
+                        NOMBRE, EMAIL, PASSWORD_HASH, TIPO_CUENTA, ESTADO_CUENTA, CREADO_EN
+                    )
+                    VALUES (
+                        :nombre, :email, :passwordHash, :tipoCuenta, :estadoCuenta, SYSTIMESTAMP
+                    )
+                    RETURNING ID INTO :id
+                `,
+                {
+                    nombre,
+                    email,
+                    passwordHash,
+                    tipoCuenta,
+                    estadoCuenta: estadoCuentaInicial,
+                    id: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
+                },
+                { autoCommit: false }
+            );
+
+            usuarioId = Number(resultadoUsuario.outBinds.id[0]);
+
+            if (tipoCuenta === "ORGANIZACION") {
+                await conexion.execute(
+                    `
+                        INSERT INTO ORGANIZACIONES (
+                            USUARIO_ID, NOMBRE_ORGANIZACION, TIPO_ORGANIZACION, RUC,
+                            REPRESENTANTE, CI_REPRESENTANTE, TELEFONO, DEPARTAMENTO,
+                            DISTRITO, DIRECCION, COMENSALES, ESTADO, CREADO_EN
+                        )
+                        VALUES (
+                            :usuarioId, :nombreOrganizacion, :tipoOrganizacion, :ruc,
+                            :representante, :ciRepresentante, :telefono, :departamento,
+                            :distrito, :direccion, :comensales, :estadoOrganizacion, SYSTIMESTAMP
+                        )
+                    `,
+                    {
+                        usuarioId,
+                        nombreOrganizacion,
+                        tipoOrganizacion,
+                        ruc: ruc || null,
+                        representante,
+                        ciRepresentante,
+                        telefono,
+                        departamento,
+                        distrito,
+                        direccion,
+                        comensales,
+                        estadoOrganizacion
+                    },
+                    { autoCommit: false }
+                );
+            }
         }
 
-        // Genera el token de sesión.
+        await conexion.commit();
+        await conexion.close();
+        conexion = null;
 
-        const token = jwt.sign(
-
-            {
-
-                id: usuario.ID,
-
-                nombre: usuario.NOMBRE,
-
-                email: usuario.EMAIL
-
-            },
-
-            JWT_SECRET,
-
-            {
-
-                expiresIn: "8h"
-
-            }
-
-        );
-
-        res.json({
-
-            token,
-
-            usuario: {
-
-                id: usuario.ID,
-
-                nombre: usuario.NOMBRE,
-
-                email: usuario.EMAIL
-
-            }
-
+        // Resultado operativo: no equivale a certificación documental ni tributaria.
+        const aprobado = tipoCuenta === "ORGANIZACION" && consultaINAN?.verificado === true;
+        return res.status(cuentaReutilizada ? 200 : 201).json({
+            mensaje: tipoCuenta === "DONANTE" ? "Donante registrado correctamente." : aprobado
+                ? "Cuenta habilitada. Registro sanitario RE confirmado; sin OCR ni validación municipal o DNIT."
+                : "No se confirmó el registro RE. Podés reintentar con el mismo correo y contraseña.",
+            estadoValidacion: tipoCuenta === "DONANTE" ? null : aprobado ? "APROBADO" : "RECHAZADO",
+            consultaINAN, cuentaReutilizada,
+            usuario: { id: usuarioId, nombre, email, tipoCuenta, estadoCuenta: estadoCuentaInicial }
         });
 
     } catch (error) {
+        if (conexion) {
+            await conexion.rollback().catch(() => {});
+        }
 
-        console.error(error);
+        console.error("Error en registro:", error);
 
-        res.status(500).json({
-
-            mensaje: "No se pudo iniciar sesión."
-
+        return res.status(500).json({
+            mensaje: "No se pudo completar el registro. Verificá los datos e intentá nuevamente."
         });
 
+    } finally {
+        if (correoBloqueado) registrosEnCurso.delete(correoBloqueado);
+        if (conexion) {
+            await conexion.close().catch(() => {});
+        }
     }
-
 });
+
+
+// LOGIN DE RESCATEPY
+app.post("/api/auth/login", async (req, res) => {
+    try {
+        // Normalizar los datos recibidos.
+        const email = String(req.body.email || "")
+            .trim()
+            .toLowerCase();
+
+        const password = String(req.body.password || "");
+
+        // Recuperar también el tipo y estado de la cuenta.
+        const usuario = await obtenerUno(
+            `
+                SELECT
+                    id,
+                    nombre,
+                    email,
+                    password_hash,
+                    tipo_cuenta,
+                    estado_cuenta,
+                    (SELECT o.ESTADO FROM ORGANIZACIONES o WHERE o.USUARIO_ID = u.ID FETCH FIRST 1 ROW ONLY) AS ESTADO_ORGANIZACION
+                FROM usuarios u
+                WHERE LOWER(u.email) = :email
+            `,
+            { email }
+        );
+
+        // Comprobar usuario y contraseña.
+        if (
+            !usuario ||
+            !(await bcrypt.compare(
+                password,
+                usuario.PASSWORD_HASH
+            ))
+        ) {
+            return res.status(401).json({
+                mensaje: "Email o contraseña incorrectos."
+            });
+        }
+
+        // El acceso depende del estado operativo, no de expedientes OCR históricos.
+        if (usuario.ESTADO_CUENTA !== "ACTIVA" ||
+            (usuario.TIPO_CUENTA === "ORGANIZACION" && usuario.ESTADO_ORGANIZACION !== "ACTIVA")) {
+            return res.status(403).json({ mensaje: "Cuenta no habilitada. Si está pendiente, reintentá el registro con el mismo correo y contraseña." });
+        }
+        usuario.ESTADO_VALIDACION = usuario.TIPO_CUENTA === "ORGANIZACION" ? "APROBADO" : null;
+
+        // Generar JWT con identificación, tipo y estado de validación.
+        const token = jwt.sign(
+            {
+                id: usuario.ID,
+                nombre: usuario.NOMBRE,
+                email: usuario.EMAIL,
+                tipoCuenta: usuario.TIPO_CUENTA,
+                estadoCuenta: usuario.ESTADO_CUENTA,
+                estadoValidacion: usuario.ESTADO_VALIDACION || null
+            },
+            JWT_SECRET,
+            {
+                expiresIn: "8h"
+            }
+        );
+
+        // Devolver los datos de sesión al frontend.
+        return res.json({
+            token,
+            usuario: {
+                id: usuario.ID,
+                nombre: usuario.NOMBRE,
+                email: usuario.EMAIL,
+                tipoCuenta: usuario.TIPO_CUENTA,
+                estadoCuenta: usuario.ESTADO_CUENTA,
+                estadoValidacion: usuario.ESTADO_VALIDACION || null
+            }
+        });
+
+    } catch (error) {
+        console.error("Error en login:", error);
+
+        return res.status(500).json({
+            mensaje: "No se pudo iniciar sesión."
+        });
+    }
+});
+
 
 // =========================================================
 
@@ -904,6 +1078,8 @@ app.get("/api/auth/yo", autenticar, async (req, res) => {
 
 // =========================================================
 
+
+// =========================================================
 // DONACIONES
 
 // =========================================================
@@ -956,7 +1132,7 @@ app.get("/api/donaciones", async (req, res) => {
 
 // Registrar una nueva donación.
 
-app.post("/api/donaciones", autenticar, async (req, res) => {
+app.post("/api/donaciones", autenticar, exigirDonante, async (req, res) => {
 
     try {
 
@@ -983,6 +1159,14 @@ app.post("/api/donaciones", autenticar, async (req, res) => {
             });
 
         }
+
+        // Revalidar la inocuidad declarada también en el servidor.
+        const errorAlimento = require("./reglas-reserva").validarAlimento({
+            FOOD_TYPE: d.foodType, FOOD_CONDITION: d.foodCondition, HYGIENE: d.hygiene,
+            REQUIRES_COLD: d.requiresCold ? 1 : 0, COLD_CHAIN: d.coldChain,
+            EXPIRY_DATE: d.expiryDate, PREPARED_STORAGE: d.preparedStorage, QUANTITY: d.quantity
+        });
+        if (errorAlimento) return res.status(400).json({ mensaje: errorAlimento });
 
         const resultado = await ejecutar(
 
@@ -1142,7 +1326,7 @@ app.post("/api/donaciones", autenticar, async (req, res) => {
 
 // Actualizar una donación existente.
 
-app.put("/api/donaciones/:id", autenticar, async (req, res) => {
+app.put("/api/donaciones/:id", autenticar, exigirDonante, async (req, res) => {
 
     try {
 
@@ -1178,9 +1362,22 @@ app.put("/api/donaciones/:id", autenticar, async (req, res) => {
 
         }
 
+        if (existente.STATUS !== "ACTIVA") return res.status(409).json({ mensaje: "Solo se editan donaciones activas." });
         const d = req.body || {};
 
-        await ejecutar(
+        const errorAlimento = require("./reglas-reserva").validarAlimento({
+            FOOD_TYPE: d.foodType ?? existente.FOOD_TYPE,
+            FOOD_CONDITION: d.foodCondition ?? existente.FOOD_CONDITION,
+            HYGIENE: d.hygiene ?? existente.HYGIENE,
+            REQUIRES_COLD: (d.requiresCold ?? Boolean(existente.REQUIRES_COLD)) ? 1 : 0,
+            COLD_CHAIN: d.coldChain ?? existente.COLD_CHAIN,
+            EXPIRY_DATE: d.expiryDate ?? existente.EXPIRY_DATE,
+            PREPARED_STORAGE: d.preparedStorage ?? existente.PREPARED_STORAGE,
+            QUANTITY: d.quantity ?? existente.QUANTITY
+        });
+        if (errorAlimento) return res.status(400).json({ mensaje: errorAlimento });
+
+        const cambio = await ejecutar(
 
             `
 
@@ -1220,7 +1417,7 @@ app.put("/api/donaciones/:id", autenticar, async (req, res) => {
 
                     updated_at = SYSTIMESTAMP
 
-                WHERE id = :id
+                WHERE id = :id AND status = 'ACTIVA'
 
             `,
 
@@ -1264,6 +1461,7 @@ app.put("/api/donaciones/:id", autenticar, async (req, res) => {
 
         );
 
+        if (cambio.rowsAffected !== 1) return res.status(409).json({mensaje:"La donación cambió de estado."});
         res.json(await obtenerDonacionCompleta(id));
 
     } catch (error) {
@@ -1282,7 +1480,7 @@ app.put("/api/donaciones/:id", autenticar, async (req, res) => {
 
 // Cancelar una donación.
 
-app.delete("/api/donaciones/:id", autenticar, async (req, res) => {
+app.delete("/api/donaciones/:id", autenticar, exigirDonante, async (req, res) => {
 
     try {
 
@@ -1318,7 +1516,7 @@ app.delete("/api/donaciones/:id", autenticar, async (req, res) => {
 
         }
 
-        await ejecutar(
+        const cambio = await ejecutar(
 
             `
 
@@ -1330,7 +1528,7 @@ app.delete("/api/donaciones/:id", autenticar, async (req, res) => {
 
                     cancelled_at = SYSTIMESTAMP
 
-                WHERE id = :id
+                WHERE id = :id AND status = 'ACTIVA'
 
             `,
 
@@ -1338,6 +1536,7 @@ app.delete("/api/donaciones/:id", autenticar, async (req, res) => {
 
         );
 
+        if (cambio.rowsAffected !== 1) return res.status(409).json({mensaje:"Solo se cancelan donaciones activas."});
         res.json({
 
             mensaje: "Donación eliminada."
@@ -1364,7 +1563,43 @@ app.delete("/api/donaciones/:id", autenticar, async (req, res) => {
 
 // =========================================================
 
-app.post("/api/donaciones/:id/reservar", autenticar, async (req, res) => {
+// Consulta el estado actual en Oracle, sin confiar en el rol enviado por el navegador.
+async function exigirOrganizacion(req, res, next) {
+    try {
+        const org = await obtenerUno(`SELECT o.ID, o.NOMBRE_ORGANIZACION, o.REPRESENTANTE,
+            o.DISTRITO, o.TIPO_ORGANIZACION, o.COMENSALES FROM ORGANIZACIONES o
+            JOIN USUARIOS u ON u.ID = o.USUARIO_ID
+            WHERE u.ID = :id AND u.TIPO_CUENTA = 'ORGANIZACION'
+            AND u.ESTADO_CUENTA = 'ACTIVA' AND o.ESTADO = 'ACTIVA'`, { id: Number(req.usuario.id) });
+        if (!org) return res.status(403).json({ mensaje: "Solo organizaciones activas pueden reservar." });
+        req.organizacion = org;
+        next();
+    } catch (error) { console.error(error); res.status(500).json({ mensaje: "No se pudo comprobar la cuenta." }); }
+}
+
+// El rol real se comprueba en Oracle en cada operación de donación.
+async function exigirDonante(req, res, next) {
+    try {
+        const donante = await obtenerUno("SELECT ID FROM USUARIOS WHERE ID = :id AND TIPO_CUENTA = 'DONANTE' AND ESTADO_CUENTA = 'ACTIVA'", { id: Number(req.usuario.id) });
+        if (!donante) return res.status(403).json({ mensaje: "Solo donantes activos pueden realizar esta acción." });
+        next();
+    } catch (error) { console.error(error); res.status(500).json({ mensaje: "No se pudo comprobar la cuenta." }); }
+}
+const { asegurarTablaNecesidades, instalarRutasNecesidades } = require("./necesidades");
+instalarRutasNecesidades(app, { autenticar, exigirOrganizacion, exigirDonante, obtenerTodos, ejecutar });
+
+// Historial privado de reservas de la organización autenticada.
+app.get("/api/comedor/reservas", autenticar, exigirOrganizacion, async (req, res) => {
+    try {
+        const filas = await obtenerTodos(`SELECT r.ID, r.ESTADO, r.CREADO_EN, d.ID AS DONACION_ID,
+            d.FOOD, d.QUANTITY, d.UNIT, d.CITY, d.ADDRESS, d.DONOR_NAME, d.WITHDRAWN_AT
+            FROM RESERVAS r JOIN DONACIONES d ON d.ID = r.DONACION_ID
+            WHERE r.USUARIO_SOLICITANTE_ID = :id ORDER BY r.ID DESC`, { id: Number(req.usuario.id) });
+        res.json({ organizacion: req.organizacion, reservas: filas });
+    } catch (error) { console.error(error); res.status(500).json({ mensaje: "No se pudieron consultar tus reservas." }); }
+});
+
+app.post("/api/donaciones/:id/reservar", autenticar, exigirOrganizacion, async (req, res) => {
 
     let conexion;
 
@@ -1410,15 +1645,18 @@ app.post("/api/donaciones/:id/reservar", autenticar, async (req, res) => {
 
         }
 
-        const r = req.body || {};
-
-        if (!r.receiverName || !r.receiverResponsible || !r.receiverCity) {
-
-            await conexion.rollback();
-
-            return res.status(400).json({ mensaje: "Completá los datos del receptor." });
-
-        }
+        const propietario = (await conexion.execute("SELECT ID FROM USUARIOS WHERE ID=:usuarioId AND TIPO_CUENTA='DONANTE' AND ESTADO_CUENTA='ACTIVA'",{usuarioId:donacion.USUARIO_ID})).rows[0];
+        if (!propietario) { await conexion.rollback(); return res.status(409).json({mensaje:"Esta publicación no pertenece a un donante activo."}); }
+        // Verifica nuevamente inocuidad y vencimiento antes de reservar.
+        const errorAlimento = require("./reglas-reserva").validarAlimento(donacion);
+        if (errorAlimento) { await conexion.rollback(); return res.status(409).json({ mensaje: errorAlimento }); }
+        // El receptor se obtiene de Oracle, no de datos manipulables del formulario.
+        let retiroMs;
+        try { retiroMs = entregas.validarFecha(req.body.fechaRetiro, donacion); }
+        catch (error) { await conexion.rollback(); return res.status(400).json({ mensaje: error.message }); }
+        const r = { receiverType: req.organizacion.TIPO_ORGANIZACION,
+            receiverName: req.organizacion.NOMBRE_ORGANIZACION,
+            receiverResponsible: req.organizacion.REPRESENTANTE, receiverCity: req.organizacion.DISTRITO };
 
         // Registra la solicitud de reserva.
 
@@ -1467,6 +1705,7 @@ app.post("/api/donaciones/:id/reservar", autenticar, async (req, res) => {
         );
 
         const reservaId = reserva.outBinds.id[0];
+        await entregas.crearCoordinacion(conexion, reservaId, retiroMs);
 
         // Cambia el estado de la donación.
 
@@ -1524,7 +1763,7 @@ app.post("/api/donaciones/:id/reservar", autenticar, async (req, res) => {
 
                 reservaId,
 
-                mensaje: `${req.usuario.nombre} solicitó reservar tu donación de ${donacion.FOOD}.`
+                mensaje: `${req.usuario.nombre} reservó ${donacion.FOOD}. Retiro previsto: ${entregas.mostrarFecha(retiroMs)} (hora Paraguay).`
 
             }
 
@@ -1558,98 +1797,37 @@ app.post("/api/donaciones/:id/reservar", autenticar, async (req, res) => {
 
 // =========================================================
 
+// Cancelar únicamente la reserva propia y liberar el lote.
+app.post("/api/comedor/reservas/:id/cancelar", autenticar, exigirOrganizacion, async (req, res) => {
+    let conexion;
+    try {
+        conexion = await obtenerConexion();
+        const id = Number(req.params.id), usuarioId = Number(req.usuario.id);
+        if (!Number.isSafeInteger(id) || id <= 0) return res.status(400).json({ mensaje: "Reserva inválida." });
+        const previa = (await conexion.execute(`SELECT DONACION_ID FROM RESERVAS WHERE ID=:id AND USUARIO_SOLICITANTE_ID=:usuarioId`, {id, usuarioId})).rows[0];
+        if (!previa) return res.status(404).json({mensaje:"Reserva no encontrada."});
+        const donacionId = previa.DONACION_ID;
+        const lote = (await conexion.execute(`SELECT STATUS, USUARIO_ID FROM DONACIONES WHERE ID=:donacionId FOR UPDATE`, {donacionId})).rows[0];
+        if (lote?.STATUS !== "RESERVADA") { await conexion.rollback(); return res.status(409).json({mensaje:"La reserva ya no se puede cancelar."}); }
+        const coordinacion = (await conexion.execute('SELECT * FROM RP_ENTREGAS WHERE RESERVA_ID=:id FOR UPDATE',{id})).rows[0];
+        if (coordinacion && (coordinacion.DONANTE_RESP || coordinacion.ORGANIZACION_RESP || Number(coordinacion.RETIRO_MS)<=Date.now())) { await conexion.rollback(); return res.status(409).json({mensaje:'Confirmá el resultado de la entrega en lugar de cancelar.'}); }
+        const cambio = await conexion.execute(`UPDATE RESERVAS SET ESTADO='CANCELADA' WHERE ID=:id AND USUARIO_SOLICITANTE_ID=:usuarioId AND ESTADO='PENDIENTE'`, {id, usuarioId});
+        if (cambio.rowsAffected !== 1) { await conexion.rollback(); return res.status(409).json({mensaje:"La reserva ya no está activa."}); }
+        await conexion.execute("UPDATE RP_ENTREGAS SET RESULTADO='CANCELADA' WHERE RESERVA_ID=:id",{id});
+        await conexion.execute(`UPDATE DONACIONES SET STATUS='ACTIVA', RESERVED_AT=NULL, RECEIVER_TYPE=NULL, RECEIVER_NAME=NULL, RECEIVER_RESPONSIBLE=NULL, RECEIVER_CITY=NULL WHERE ID=:donacionId`, {donacionId});
+        await conexion.execute(`INSERT INTO NOTIFICACIONES (USUARIO_ID, RESERVA_ID, MENSAJE, LEIDA, CREADO_EN) VALUES (:usuarioId,:id,:mensaje,0,SYSTIMESTAMP)`, {usuarioId:lote.USUARIO_ID,id,mensaje:"La organización canceló su reserva."});
+        await conexion.commit(); res.json({mensaje:"Reserva cancelada."});
+    } catch(error) { if(conexion) await conexion.rollback().catch(()=>{}); console.error(error); res.status(500).json({mensaje:"No se pudo cancelar."}); }
+    finally { if(conexion) await conexion.close().catch(()=>{}); }
+});
+
 // CONFIRMAR RETIRO DE DONACIÓN
 
 // =========================================================
 
-app.post("/api/donaciones/:id/retirar", autenticar, async (req, res) => {
-
-    let conexion;
-
-    try {
-
-        const id = Number(req.params.id);
-
-        conexion = await obtenerConexion();
-
-        const resultado = await conexion.execute(
-
-            `SELECT * FROM donaciones WHERE id = :id FOR UPDATE`,
-
-            { id }
-
-        );
-
-        const donacion = resultado.rows[0];
-
-        if (!donacion) {
-
-            await conexion.rollback();
-
-            return res.status(404).json({ mensaje: "Donación no encontrada." });
-
-        }
-
-        if (Number(donacion.USUARIO_ID) !== Number(req.usuario.id)) {
-
-            await conexion.rollback();
-
-            return res.status(403).json({ mensaje: "Solo el propietario puede confirmar el retiro." });
-
-        }
-
-        if (donacion.STATUS !== "RESERVADA") {
-
-            await conexion.rollback();
-
-            return res.status(409).json({ mensaje: "La donación debe estar reservada." });
-
-        }
-
-        // Actualiza la donación y la reserva.
-
-        await conexion.execute(
-
-            `UPDATE donaciones
-
-             SET status = 'RETIRADA', withdrawn_at = SYSTIMESTAMP
-
-             WHERE id = :id`,
-
-            { id }
-
-        );
-
-        await conexion.execute(
-
-            `UPDATE reservas
-
-             SET estado = 'RETIRADA'
-
-             WHERE donacion_id = :id AND estado = 'PENDIENTE'`,
-
-            { id }
-
-        );
-
-        await conexion.commit();
-
-        res.json(await obtenerDonacionCompleta(id));
-
-    } catch (error) {
-
-        if (conexion) await conexion.rollback();
-
-        console.error(error);
-
-        res.status(500).json({ mensaje: "No se pudo confirmar el retiro." });
-
-    } finally {
-
-        if (conexion) await conexion.close();
-
-    }
-
+// La ruta anterior no puede saltarse la confirmación bilateral.
+app.post("/api/donaciones/:id/retirar", autenticar, exigirDonante, async (req,res) => {
+    res.status(409).json({mensaje:"Usá el panel Entregas para confirmar el resultado."});
 });
 
 // =========================================================
@@ -2040,11 +2218,7 @@ app.post("/api/auth/restablecer", async (req, res) => {
 
 app.get("*", (req, res) => {
 
-    res.sendFile(
-
-        path.join(__dirname, "..", "index.html")
-
-    );
+    res.sendFile(path.join(__dirname, "..", "frontend", "index.html"));
 
 });
 
@@ -2059,6 +2233,11 @@ async function iniciarServidor() {
         // Crear tabla de recuperación si no existe.
 
         await asegurarTablaRecuperacion();
+        try { await entregas.asegurarTablaEntregas(ejecutar); console.log("Tabla de entregas verificada."); }
+        catch (error) { console.error("No se pudo preparar RP_ENTREGAS:", error.message); }
+        // La falta de permiso CREATE TABLE no detiene las funciones anteriores.
+        try { await asegurarTablaNecesidades(ejecutar); console.log("Tabla de necesidades verificada."); }
+        catch (error) { console.error("No se pudo crear RP_NECESIDADES; revisá permisos Oracle.", error.message); }
 
         app.listen(PORT, () => {
 
@@ -2090,6 +2269,7 @@ async function iniciarServidor() {
 
 process.on("SIGINT", async () => {
 
+    
     await cerrarPool();
 
     process.exit(0);
@@ -2098,6 +2278,7 @@ process.on("SIGINT", async () => {
 
 process.on("SIGTERM", async () => {
 
+    
     await cerrarPool();
 
     process.exit(0);

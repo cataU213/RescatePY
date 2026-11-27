@@ -1,0 +1,13 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const {validarAlimento} = require('../reglas-reserva');
+const base = { FOOD_TYPE:'fresh', FOOD_CONDITION:'good', HYGIENE:'yes', REQUIRES_COLD:0, QUANTITY:10 };
+const hoy = new Date('2026-11-27T15:00:00Z');
+test('alimento fresco apto según datos declarados',()=>assert.equal(validarAlimento(base,hoy),null));
+test('rechaza deterioro, daño y contaminación',()=>{for(const value of ['damaged','deteriorated','contaminated']) assert.ok(validarAlimento({...base,FOOD_CONDITION:value},hoy));});
+test('rechaza higiene no confirmada',()=>assert.ok(validarAlimento({...base,HYGIENE:'no'},hoy)));
+test('rechaza cadena de frío ausente',()=>assert.ok(validarAlimento({...base,REQUIRES_COLD:1,COLD_CHAIN:'no'},hoy)));
+test('rechaza comida preparada sin conservación',()=>assert.ok(validarAlimento({...base,FOOD_TYPE:'prepared',PREPARED_STORAGE:'unknown'},hoy)));
+test('rechaza fechas ausentes, vencidas o inválidas',()=>{for(const fecha of [null,'2026-11-27','2026-11-26','2026-11-31']) assert.ok(validarAlimento({...base,FOOD_TYPE:'dated',EXPIRY_DATE:fecha},hoy));});
+test('acepta fecha posterior',()=>assert.equal(validarAlimento({...base,FOOD_TYPE:'dated',EXPIRY_DATE:'2026-11-28'},hoy),null));
+test('rechaza cantidad negativa o tipo desconocido',()=>{assert.ok(validarAlimento({...base,QUANTITY:-1},hoy));assert.ok(validarAlimento({...base,FOOD_TYPE:'otro'},hoy));});

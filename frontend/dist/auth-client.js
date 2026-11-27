@@ -1,4 +1,3 @@
-
 // =========================================================
 // RESCATEPY - SESIÓN, LOGIN Y CONEXIÓN CON LA API
 // =========================================================
@@ -41,8 +40,12 @@
     // =====================================================
 
     async function api(ruta, opciones = {}) {
+        const esFormData =
+            typeof FormData !== "undefined" &&
+            opciones.body instanceof FormData;
+
         const headers = {
-            "Content-Type": "application/json",
+            ...(!esFormData ? { "Content-Type": "application/json" } : {}),
             ...(opciones.headers || {})
         };
 
@@ -152,6 +155,16 @@
         logoutButton?.classList.toggle("campo-oculto", !usuario);
 
         notificationButton?.classList.toggle("campo-oculto", !usuario);
+        document.getElementById("misReservasBtn")?.classList.toggle("campo-oculto", usuario?.tipoCuenta !== "ORGANIZACION");
+
+        const esOrganizacion = usuario?.tipoCuenta === "ORGANIZACION";
+        // Las organizaciones reciben alimentos, pero pueden donar artículos.
+        document.getElementById("abrirDonacionBtn")?.classList.toggle("campo-oculto", esOrganizacion);
+        document.getElementById("abrirAyudarBtn")?.classList.toggle("campo-oculto", usuario?.tipoCuenta === "DONANTE");
+        document.getElementById("necesidadesOrganizacionBtn")?.classList.toggle("campo-oculto", !esOrganizacion);
+        document.getElementById("necesidadesDonanteBtn")?.classList.toggle("campo-oculto", usuario?.tipoCuenta !== "DONANTE");
+        // Cerrar formularios privados si cambia la sesión.
+        document.dispatchEvent(new CustomEvent("rescate:sesion", { detail: usuario }));
 
         if (usuario) {
             actualizarContadorNotificaciones();
@@ -190,96 +203,60 @@
     // NOTIFICACIONES
     // =====================================================
 
-    async function actualizarContadorNotificaciones() {
-        if (!leerUsuario()) return;
-
-        try {
-            const notificaciones = await api("/notificaciones", {
-                method: "GET"
-            });
-
-            const pendientes = notificaciones.filter(
-                item => !Number(item.leida)
-            ).length;
-
-            const contador = document.getElementById("notificationCount");
-
-            if (contador) {
-                contador.textContent = pendientes
-                    ? String(pendientes)
-                    : "";
-            }
-
-        } catch (error) {
-            console.warn(error.message);
-        }
+    // Consultar avisos periódicamente y marcar los visibles al abrir la campana.
+    let consultandoAvisos = false;
+    let leyendoAvisos = false;
+    function pintarContador(n) {
+        const contador = document.getElementById("notificationCount");
+        if (contador) { contador.textContent = n ? String(n) : ""; contador.hidden = !n; }
     }
-
+    async function actualizarContadorNotificaciones() {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (!leerUsuario() || !token || consultandoAvisos || leyendoAvisos) return;
+        consultandoAvisos = true;
+        try {
+            const filas = await api("/notificaciones", { method: "GET", cache: "no-store" });
+            if (token === localStorage.getItem(TOKEN_KEY) && !leyendoAvisos)
+                pintarContador(filas.filter(n => !Number(n.leida)).length);
+        } catch (error) { console.warn(error.message); }
+        finally { consultandoAvisos = false; }
+    }
     async function mostrarNotificaciones() {
-        if (!requiereLogin()) return;
-
+        if (!requiereLogin() || leyendoAvisos) return;
+        const token = localStorage.getItem(TOKEN_KEY);
         const lista = document.getElementById("notificationList");
         const modal = document.getElementById("notificationModal");
-
         modal?.classList.add("activo");
-
-        if (lista) {
-            lista.innerHTML =
-                '<p class="notificacion-vacia">Cargando...</p>';
-        }
-
+        if (!lista) return;
+        leyendoAvisos = true;
+        lista.textContent = "Cargando...";
         try {
-            const notificaciones = await api("/notificaciones", {
-                method: "GET"
-            });
-
-            if (!lista) return;
-
-            if (!notificaciones.length) {
-                lista.innerHTML =
-                    '<p class="notificacion-vacia">Todavía no tenés notificaciones.</p>';
-                return;
+            const filas = await api("/notificaciones", { method: "GET", cache: "no-store" });
+            if (token !== localStorage.getItem(TOKEN_KEY)) return;
+            // Marcar solo las notificaciones recibidas, sin borrar el historial.
+            let fallos = 0;
+            for (const n of filas.filter(n => !Number(n.leida))) {
+                if (token !== localStorage.getItem(TOKEN_KEY)) return;
+                try { await api(`/notificaciones/${n.id}/leida`, { method: "PATCH" }); n.leida = 1; }
+                catch (e) { fallos++; }
             }
-
-            lista.innerHTML = "";
-
-            notificaciones.forEach((n) => {
-                const item = document.createElement("button");
-
-                item.type = "button";
-
-                item.className =
-                    `notificacion-item ${Number(n.leida) ? "leida" : ""}`;
-
-                item.innerHTML = `
-                    <strong>${Number(n.leida) ? "Notificación" : "Nueva solicitud"}</strong>
-                    <span>${escapeHTML(n.mensaje)}</span>
-                    <small>${formatear(n.creado_en)}</small>
-                `;
-
-                item.addEventListener("click", async () => {
-                    if (!Number(n.leida)) {
-                        await api(`/notificaciones/${n.id}/leida`, {
-                            method: "PATCH"
-                        });
-
-                        item.classList.add("leida");
-
-                        n.leida = 1;
-
-                        actualizarContadorNotificaciones();
-                    }
-                });
-
+            if (token !== localStorage.getItem(TOKEN_KEY)) return;
+            pintarContador(fallos);
+            lista.replaceChildren();
+            if (!filas.length) lista.textContent = "Todavía no tenés notificaciones.";
+            for (const n of filas) {
+                const item = document.createElement("div");
+                item.className = `notificacion-item ${Number(n.leida) ? "leida" : ""}`;
+                item.innerHTML = `<strong>Notificación</strong><span>${escapeHTML(n.mensaje)}</span><small>${formatear(n.creado_en)}</small>`;
                 lista.appendChild(item);
-            });
-
-        } catch (error) {
-            if (lista) {
-                lista.innerHTML =
-                    `<p class="notificacion-vacia">${escapeHTML(error.message)}</p>`;
             }
-        }
+            const chat = document.createElement("button");
+            chat.type = "button"; chat.className = "notificacion-item"; chat.textContent = "Abrir mis conversaciones";
+            chat.onclick = () => { modal?.classList.remove("activo"); window.RescateSeguimiento?.conversaciones(); };
+            lista.appendChild(chat);
+            if (fallos) lista.append("No se pudieron marcar todos los avisos. Volvé a abrir la campana para reintentar.");
+        } catch (error) { if (token === localStorage.getItem(TOKEN_KEY)) lista.textContent = error.message; }
+        finally { leyendoAvisos = false; actualizarContadorNotificaciones(); }
     }
 
     // =====================================================
@@ -343,6 +320,9 @@
         document.getElementById("logoutButton")
             ?.addEventListener("click", cerrarSesion);
 
+        // Actualizar la campana sin recargar la página.
+        setInterval(actualizarContadorNotificaciones, 5000);
+        window.addEventListener("focus", actualizarContadorNotificaciones);
         // Notificaciones.
         document.getElementById("notificationButton")
             ?.addEventListener("click", mostrarNotificaciones);
@@ -482,6 +462,69 @@
             });
 
         // =================================================
+        // SELECCIÓN DEL TIPO DE CUENTA
+        // =================================================
+
+        const btnDonante = document.getElementById("registerRoleDonante");
+        const btnComedor = document.getElementById("registerRoleComedor");
+
+        const tipoCuentaInput = document.getElementById("registerAccountType");
+        const camposOrganizacion = document.getElementById("registerOrganizationFields");
+
+        // Activa los campos correspondientes al tipo de cuenta.
+        function seleccionarTipoCuenta(tipo) {
+            const esOrganizacion = tipo === "ORGANIZACION";
+
+            if (tipoCuentaInput) {
+                tipoCuentaInput.value = tipo;
+            }
+
+            camposOrganizacion?.classList.toggle(
+                "campo-oculto",
+                !esOrganizacion
+            );
+
+            btnDonante?.classList.toggle("activo", !esOrganizacion);
+            btnComedor?.classList.toggle("activo", esOrganizacion);
+
+            // Los datos institucionales son obligatorios para comedores.
+            const campos = [
+                ["registerOrgName", true],
+                ["registerOrgType", true],
+                ["registerOrgRuc", true],
+                ["registerRepresentative", true],
+                ["registerCiRepresentative", true],
+                ["registerPhone", true],
+                ["registerDepartment", true],
+                ["registerDistrict", true],
+                ["registerAddress", true],
+                ["registerDiners", true]
+            ];
+
+            campos.forEach(([id, obligatorio]) => {
+                const campo = document.getElementById(id);
+
+                if (campo) {
+                    campo.required = esOrganizacion && obligatorio;
+                }
+            });
+        }
+
+        // Selección de donante.
+        btnDonante?.addEventListener("click", () => {
+            seleccionarTipoCuenta("DONANTE");
+        });
+
+        // Selección de comedor.
+        btnComedor?.addEventListener("click", () => {
+            seleccionarTipoCuenta("ORGANIZACION");
+        });
+
+        // Inicializa el formulario como donante.
+        seleccionarTipoCuenta("DONANTE");
+
+
+        // =================================================
         // REGISTRO DE USUARIOS
         // =================================================
 
@@ -498,35 +541,81 @@
                 const repetir =
                     document.getElementById("registerPassword2").value;
 
-                // Verifica que ambas contraseñas coincidan.
+                const tipoCuenta =
+                    tipoCuentaInput?.value || "DONANTE";
+
+                // Comprueba que las contraseñas coincidan.
                 if (password !== repetir) {
                     if (mensaje) {
-                        mensaje.textContent =
-                            "Las contraseñas no coinciden.";
+                        mensaje.textContent = "Las contraseñas no coinciden.";
                     }
-
                     return;
                 }
 
+                // Prepara los datos generales.
+                const datosRegistro = {
+                    nombre: document.getElementById("registerName").value.trim(),
+                    email: document.getElementById("registerEmail").value.trim(),
+                    password,
+                    tipoCuenta
+                };
+
+                // Agrega los datos institucionales si es un comedor.
+                if (tipoCuenta === "ORGANIZACION") {
+                    datosRegistro.nombreOrganizacion =
+                        document.getElementById("registerOrgName").value.trim();
+
+                    datosRegistro.tipoOrganizacion =
+                        document.getElementById("registerOrgType").value.trim();
+
+                    datosRegistro.ruc =
+                        document.getElementById("registerOrgRuc").value.trim();
+
+                    datosRegistro.representante =
+                        document.getElementById("registerRepresentative").value.trim();
+
+                    datosRegistro.ciRepresentante =
+                        document.getElementById("registerCiRepresentative").value.trim();
+
+                    datosRegistro.telefono =
+                        document.getElementById("registerPhone").value.trim();
+
+                    datosRegistro.departamento =
+                        document.getElementById("registerDepartment").value.trim();
+
+                    datosRegistro.distrito =
+                        document.getElementById("registerDistrict").value.trim();
+
+                    datosRegistro.direccion =
+                        document.getElementById("registerAddress").value.trim();
+
+                    datosRegistro.comensales =
+                        Number(document.getElementById("registerDiners").value);
+                }
+
                 try {
-                    await api("/auth/registro", {
-                        method: "POST",
-                        body: JSON.stringify({
-                            nombre: document.getElementById("registerName").value,
-                            email: document.getElementById("registerEmail").value,
-                            password
-                        })
-                    });
+                    // Registro institucional sin carga de archivos ni OCR.
+                    const respuesta = await api("/auth/registro", { method: "POST", body: JSON.stringify(datosRegistro) });
 
                     if (mensaje) {
-                        mensaje.textContent =
-                            "Cuenta creada. Ahora podés iniciar sesión.";
+                        mensaje.textContent = respuesta.mensaje ||
+                            (tipoCuenta === "ORGANIZACION"
+                                ? "Estado de registro: " + (respuesta.estadoValidacion || "PENDIENTE")
+                                : "Donante registrado correctamente.");
                     }
 
-                    cambiarModo("login");
+                    // Conserva el correo para iniciar sesión cuando la cuenta esté aprobada.
+                    document.getElementById("loginEmail").value = datosRegistro.email;
 
-                    document.getElementById("loginEmail").value =
-                        document.getElementById("registerEmail").value;
+                    if (tipoCuenta === "DONANTE" || respuesta.estadoValidacion === "APROBADO") {
+                        cambiarModo("login");
+                    } else {
+                        // La cuenta pendiente permanece en el formulario para permitir otro envío con el mismo correo.
+                        const passwordActual = document.getElementById("registerPassword");
+                        const repetirActual = document.getElementById("registerPassword2");
+                        if (passwordActual) passwordActual.value = password;
+                        if (repetirActual) repetirActual.value = repetir;
+                    }
 
                 } catch (error) {
                     if (mensaje) {

@@ -32,7 +32,24 @@
     <link
         rel="stylesheet"
         href="styles.css">
-</head>
+<style>
+.panel-seguimiento {max-width:min(92vw,720px);max-height:85vh;margin:auto;overflow:auto;}
+.panel-seguimiento article {border:1px solid #46605f;border-radius:10px;padding:12px;margin:10px 0;overflow-wrap:anywhere;}
+.panel-seguimiento label {display:block;margin:12px 0;}
+.panel-seguimiento select,.panel-seguimiento input,.panel-seguimiento textarea {display:block;width:100%;box-sizing:border-box;margin-top:5px;}
+.panel-seguimiento button {margin:4px;}
+.seguimiento-chat {max-height:260px;overflow:auto;}
+.seguimiento-chat p {white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0;}
+.panel-seguimiento.panel-chat-compacto {width:min(92vw,440px);max-height:85vh;}
+.panel-chat-compacto .seguimiento-chat {height:min(35vh,280px);overflow:auto;padding:8px;border:1px solid #46605f;border-radius:10px;}
+.panel-chat-compacto .seguimiento-chat article {max-width:85%;margin:8px 0;padding:8px;}
+.panel-chat-compacto .seguimiento-chat .chat-propio {margin-left:auto;border-color:#168d4b;}
+.panel-chat-compacto .seguimiento-chat small {opacity:.8;}
+.panel-seguimiento textarea.chat-mensaje {background:#23343d!important;color:#f5faf9!important;caret-color:#fff!important;border:1px solid #66847f; border-radius:8px;padding:10px;font:inherit;resize:vertical;pointer-events:auto;user-select:text;}
+.panel-seguimiento textarea.chat-mensaje::placeholder {color:#b7c9c8!important;}
+.panel-seguimiento textarea.chat-mensaje:focus {outline:2px solid #36c685;}
+
+</style></head>
 
 
 <body>
@@ -70,6 +87,9 @@
             </button>
 
 
+            <button id="necesidadesOrganizacionBtn" class="campo-oculto" type="button">
+                <span class="menu-icono">+</span> Publicar necesidades
+            </button>
             <button
                 id="abrirDisponiblesBtn"
                 type="button">
@@ -90,34 +110,13 @@
             </button>
 
 
-            <button
-                id="abrirAyudaCercaBtn"
-                type="button">
 
-                <span class="menu-icono">⌖</span>
-                Tu ayuda cerca
-
-            </button>
+            <button id="entregasBtn" class="campo-oculto" type="button"><span class="menu-icono">◷</span> Coordinar entregas</button>
+            <button id="ofertasSeguimientoBtn" class="campo-oculto" type="button"><span class="menu-icono">↔</span> <span data-texto>Ofertas</span></button>
+            <button id="calificarSeguimientoBtn" class="campo-oculto" type="button"><span class="menu-icono">★</span> Calificar plataforma</button>
 
 
-            <button
-                id="abrirManosSumanBtn"
-                type="button">
 
-                <span class="menu-icono">✦</span>
-                Manos que suman
-
-            </button>
-
-
-            <button
-                id="abrirEcoValorBtn"
-                type="button">
-
-                <span class="menu-icono">♻</span>
-                EcoValor
-
-            </button>
 
 
             <button
@@ -142,6 +141,8 @@
             Iniciar sesión
         </button>
 
+        <button id="necesidadesDonanteBtn" class="boton-cuenta campo-oculto" type="button">Necesidades de organizaciones</button>
+        <button id="misReservasBtn" class="boton-cuenta campo-oculto" type="button">Mi organización</button>
         <button id="notificationButton" class="boton-notificacion campo-oculto" type="button">
             🔔 <span id="notificationCount"></span>
         </button>
@@ -1291,111 +1292,10 @@
                         type="hidden">
 
 
-                    <div class="donacion-grid">
+                    <p>La reserva se registrará a nombre de tu organización con los datos de tu cuenta.</p>
 
-
-                        <!-- Tipo de receptor -->
-                        <div class="campo-donacion">
-
-                            <label for="receiverType">
-                                Tipo de receptor
-                            </label>
-
-                            <select
-                                id="receiverType"
-                                required>
-
-                                <option value="Comedor comunitario">
-                                    Comedor comunitario
-                                </option>
-
-                                <option value="Albergue">
-                                    Albergue
-                                </option>
-
-                                <option value="Hogar">
-                                    Hogar
-                                </option>
-
-                                <option value="Organización social">
-                                    Organización social
-                                </option>
-
-                                <option value="Centro comunitario">
-                                    Centro comunitario
-                                </option>
-
-                                <option value="Comunidad">
-                                    Comunidad
-                                </option>
-
-                                <option value="Emergencia">
-                                    Emergencia
-                                </option>
-
-                                <option value="Otro">
-                                    Otro
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-
-                        <!-- Nombre del receptor -->
-                        <div class="campo-donacion">
-
-                            <label for="receiverName">
-                                Nombre del receptor
-                            </label>
-
-                            <input
-                                id="receiverName"
-                                type="text"
-                                placeholder="Ej.: Comedor Esperanza"
-                                required>
-
-                        </div>
-
-
-
-                        <!-- Responsable -->
-                        <div class="campo-donacion">
-
-                            <label for="receiverResponsible">
-                                Responsable
-                            </label>
-
-                            <input
-                                id="receiverResponsible"
-                                type="text"
-                                placeholder="Nombre de quien retira"
-                                required>
-
-                        </div>
-
-
-
-                        <!-- Ciudad / sector -->
-                        <div class="campo-donacion">
-
-                            <label for="receiverCity">
-                                Ciudad / sector
-                            </label>
-
-                            <input
-                                id="receiverCity"
-                                type="text"
-                                placeholder="Ej.: Capiatá"
-                                required>
-
-                        </div>
-
-                    </div>
-
-
-
+                    <label for="fechaRetiro">Fecha y hora de retiro (Paraguay)</label>
+                    <input id="fechaRetiro" type="datetime-local" required>
                     <!-- Confirmar reserva -->
                     <div class="botones-validacion">
 
@@ -1403,7 +1303,7 @@
                             type="submit"
                             class="ejecutar-validacion">
 
-                            Confirmar reserva
+                            Reservar y avisar al donante
 
                         </button>
 
@@ -1563,6 +1463,10 @@
 
                                 <option value="Alimento no perecedero">
                                     Alimentos no perecederos
+                                </option>
+
+                                <option value="Juguetes">
+                                    Juguetes
                                 </option>
 
                                 <option value="Artículos para bebé">
@@ -2185,214 +2089,6 @@
 
 
     <!-- =====================================================
-         MODAL 11 - ECOVALOR
-         Orientado a recicladores independientes.
-    ====================================================== -->
-
-    <div
-        id="ecoValorModal"
-        class="donacion-modal-overlay">
-
-        <!-- Fondo oscuro -->
-        <div
-            id="ecoValorBackdrop"
-            class="donacion-modal-fondo">
-        </div>
-
-
-        <section class="donacion-modal modal-disponibles">
-
-
-            <!-- Cabecera -->
-            <header class="donacion-modal-header">
-
-                <div>
-
-                    <span class="donacion-etiqueta">
-                        CONVERTÍ LO QUE RECUPERÁS EN UNA OPORTUNIDAD
-                    </span>
-
-                    <h2>
-                        EcoValor
-                    </h2>
-
-                </div>
-
-
-                <button
-                    id="cerrarEcoValorBtn"
-                    class="cerrar-donacion"
-                    type="button">
-
-                    ×
-
-                </button>
-
-            </header>
-
-
-
-            <!-- Cuerpo -->
-            <div class="donacion-modal-body">
-
-
-                <div class="donacion-grid">
-
-
-                    <!-- Material -->
-                    <div class="campo-donacion">
-
-                        <label for="recycleMaterial">
-                            ¿Qué material tenés?
-                        </label>
-
-                        <select id="recycleMaterial">
-
-                            <option value="Latas de aluminio">
-                                Latas de aluminio
-                            </option>
-
-                            <option value="Plástico PET">
-                                Plástico PET
-                            </option>
-
-                            <option value="Plástico mixto">
-                                Plástico mixto
-                            </option>
-
-                            <option value="Cartón">
-                                Cartón
-                            </option>
-
-                            <option value="Papel">
-                                Papel
-                            </option>
-
-                            <option value="Hierro">
-                                Hierro
-                            </option>
-
-                            <option value="Cobre">
-                                Cobre
-                            </option>
-
-                            <option value="Bronce">
-                                Bronce
-                            </option>
-
-                            <option value="Vidrio">
-                                Vidrio
-                            </option>
-
-                            <option value="Otros metales">
-                                Otros metales
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-
-                    <!-- Kilos -->
-                    <div class="campo-donacion">
-
-                        <label for="recycleKg">
-                            ¿Cuántos kilos tenés?
-                        </label>
-
-                        <input
-                            id="recycleKg"
-                            type="number"
-                            min="0.01"
-                            step="0.01"
-                            placeholder="Ej.: 8.5">
-
-                    </div>
-
-
-
-                    <!-- Ciudad -->
-                    <div class="campo-donacion">
-
-                        <label for="recycleCity">
-                            ¿Dónde estás?
-                        </label>
-
-                        <input
-                            id="recycleCity"
-                            type="text"
-                            placeholder="Ej.: Luque">
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Acción principal -->
-                <div class="botones-validacion">
-
-                    <button
-                        id="buscarEcoValorBtn"
-                        class="ejecutar-validacion"
-                        type="button">
-
-                        Ver valor y dónde vender
-
-                    </button>
-
-                </div>
-
-
-
-                <!-- Resultado de precio / valor estimado -->
-                <div
-                    id="ecoValueResult"
-                    class="resultado-validacion campo-oculto">
-
-                    <!-- JavaScript cargará aquí:
-                         - material
-                         - kilos
-                         - precio de referencia por kg
-                         - valor estimado
-                         - fuente
-                         - fecha de actualización
-                    -->
-
-                </div>
-
-
-
-                <!-- Centros o compradores -->
-                <div class="observacion-donacion">
-
-                    <h3>
-                        Dónde vender cerca
-                    </h3>
-
-                    <!-- JavaScript carga aquí recicladoras/compradores. -->
-                    <div
-                        id="recyclingCenters"
-                        class="lista-donaciones">
-
-                        <div class="sin-donaciones">
-                            Elegí un material y una ciudad para comenzar.
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </div>
-
-
-
-    <!-- =====================================================
          MODAL 12 - IMPACTO ODS
          RESCATEPY.
     ====================================================== -->
@@ -2611,25 +2307,144 @@
                     <button class="ejecutar-validacion" type="submit">Iniciar sesión</button>
                 </form>
 
+                
+                <!-- FORMULARIO DE REGISTRO RESCATEPY -->
                 <form id="registerForm" class="auth-form campo-oculto">
+
+                    <!-- Selección del tipo de cuenta -->
+                    <div class="campo-donacion">
+                        <label>Seleccioná qué tipo de usuario sos</label>
+                    </div>
+
+                    <div class="auth-tabs">
+
+                        <!-- Registro individual -->
+                        <button
+                            id="registerRoleDonante"
+                            class="auth-tab activo"
+                            type="button">
+                            <strong>DONANTE</strong>
+                            <small>Personas y empresas que ofrecen donaciones.</small>
+                            <small>Registro individual</small>
+                        </button>
+
+                        <!-- Registro institucional -->
+                        <button
+                            id="registerRoleComedor"
+                            class="auth-tab"
+                            type="button">
+                            <strong>COMEDOR</strong>
+                            <small>Comedores y organizaciones que reciben asistencia.</small>
+                            <small>Registro institucional</small>
+                        </button>
+
+                    </div>
+
+                    <!-- Guarda el tipo de cuenta seleccionado -->
+                    <input type="hidden" id="registerAccountType" value="DONANTE">
+
+                    <!-- Datos personales -->
                     <div class="campo-donacion">
                         <label for="registerName">Nombre</label>
-                        <input id="registerName" type="text" required placeholder="Tu nombre u organización">
+                        <input id="registerName" type="text" required
+                            placeholder="Tu nombre o nombre del responsable">
                     </div>
+
                     <div class="campo-donacion">
                         <label for="registerEmail">Correo electrónico</label>
-                        <input id="registerEmail" type="email" required placeholder="correo@ejemplo.com">
+                        <input id="registerEmail" type="email" required
+                            placeholder="correo@ejemplo.com">
                     </div>
+
                     <div class="campo-donacion">
                         <label for="registerPassword">Contraseña</label>
-                        <input id="registerPassword" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
+                        <input id="registerPassword" type="password"
+                            minlength="6" required
+                            placeholder="Mínimo 6 caracteres">
                     </div>
+
                     <div class="campo-donacion">
                         <label for="registerPassword2">Repetir contraseña</label>
-                        <input id="registerPassword2" type="password" minlength="6" required placeholder="Repetí la contraseña">
+                        <input id="registerPassword2" type="password"
+                            minlength="6" required
+                            placeholder="Repetí la contraseña">
                     </div>
-                    <button class="ejecutar-validacion" type="submit">Crear cuenta</button>
+
+                    <!-- Datos exclusivos del comedor -->
+                    <div id="registerOrganizationFields" class="campo-oculto">
+
+                        <div class="campo-donacion">
+                            <label for="registerOrgName">Razón social de la organización</label>
+                            <input id="registerOrgName" type="text"
+                                placeholder="Nombre de la organización">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerOrgType">Tipo de organización</label>
+                            <input id="registerOrgType" type="text"
+                                placeholder="COMEDOR">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerOrgRuc">RUC</label>
+                            <input id="registerOrgRuc" type="text"
+                                placeholder="RUC de la organización">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerRepresentative">Representante</label>
+                            <input id="registerRepresentative" type="text"
+                                placeholder="Nombre del representante">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerCiRepresentative">CI del representante</label>
+                            <input id="registerCiRepresentative" type="text"
+                                placeholder="Número de cédula">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerPhone">Teléfono</label>
+                            <input id="registerPhone" type="tel"
+                                placeholder="Número de contacto">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerDepartment">Departamento</label>
+                            <input id="registerDepartment" type="text"
+                                placeholder="Departamento">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerDistrict">Distrito</label>
+                            <input id="registerDistrict" type="text"
+                                placeholder="Distrito">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerAddress">Dirección</label>
+                            <input id="registerAddress" type="text"
+                                placeholder="Dirección del comedor">
+                        </div>
+
+                        <div class="campo-donacion">
+                            <label for="registerDiners">Cantidad de comensales</label>
+                            <input id="registerDiners" type="number"
+                                min="1" step="1"
+                                placeholder="Ejemplo: 50">
+                        </div>
+
+
+
+                    </div>
+
+                    <!-- Botón de envío -->
+                    <button class="ejecutar-validacion" type="submit">
+                        Crear cuenta
+                    </button>
+
                 </form>
+
 
                 <p id="authMessage" class="auth-message"></p>
             </div>
@@ -2660,8 +2475,12 @@
 
 
     <!-- Login y API se cargan antes de la lógica principal. -->
-    <script src="auth-client.js"></script>
-    <script src="app.js"></script>
+    <script src="dist/auth-client.js?v=20261127-notificaciones"></script>
+    <script src="dist/app.js"></script>
+    <script src="dist/organizacion.js"></script>
+    <script src="dist/necesidades-ui.js"></script>
+    <script src="dist/entregas-ui.js?v=20261127-chatfix"></script>
+    <script src="dist/seguimiento-ui.js?v=20261127-notificaciones"></script>
 
 </body>
 

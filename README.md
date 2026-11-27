@@ -177,3 +177,27 @@ Oracle Database
 
 
 
+
+
+## 📄 Validación documental con OCR
+
+El módulo de documentos para comedores permite cargar archivos PDF, PNG y JPG desde el menú ODS. El backend utiliza Tesseract para extraer texto, guarda los originales y resultados en Oracle y compara RUC/CI con los datos institucionales registrados. La salida es una ayuda de revisión y no una aprobación oficial automática.
+
+Para instalación y uso, consultá [`backend/README-OCR.md`](backend/README-OCR.md).
+
+
+## Registro de comedores con OCR
+
+La carga documental se realiza directamente en el formulario **Registrarme → COMEDOR**.
+El formulario requiere al menos una evidencia PDF, JPG o PNG y permite hasta cinco archivos
+de hasta 12 MB cada uno. El backend guarda los originales en Oracle BLOB, el texto OCR en
+CLOB y consolida el expediente en APROBADO, NO_VERIFICABLE o RECHAZADO.
+
+- APROBADO: RUC y CI reconocidos coinciden con los datos registrados y la confianza OCR
+  promedio alcanza el umbral configurado.
+- NO_VERIFICABLE: falta información legible o no se alcanza la evidencia necesaria. Se permite
+  iniciar sesión para completar el expediente.
+- RECHAZADO: se detectan identificadores incompatibles con alta confianza; se bloquea el login.
+
+La comparación OCR es una comprobación interna de consistencia. No sustituye la consulta
+a los registros oficiales de DNIT ni certifica por sí sola la autenticidad del documento.

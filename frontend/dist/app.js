@@ -12,7 +12,6 @@
    7. Quiero ayudar
    8. Tu ayuda cerca
    9. Manos que suman
-   10. EcoValor
    11. Impacto ODS
    12. Persistencia con localStorage
 
@@ -1134,10 +1133,40 @@ function prepararDashboardInteligenciaSocial() {
 
 
 /* Renderiza el dashboard territorial con los datos actuales. */
+// Indicadores generales: se consultan directamente en Oracle a través de la API.
+let impactoSolicitud=0;
+async function actualizarImpactoEntregas() {
+    const modal=document.getElementById('modalSocial');
+    const dashboard=modal?.querySelector('.reporte-dashboard-final');
+    if(!dashboard || !modal.classList.contains('activo')) return;
+    let zona=dashboard.querySelector('#impactoEntregas');
+    if(!zona){zona=document.createElement('section');zona.id='impactoEntregas';zona.className='impacto-entregas';dashboard.querySelector('.reporte-superior').before(zona);}
+    const version=++impactoSolicitud;
+    try {
+        const respuesta=await fetch('/api/impacto-entregas',{cache:'no-store'});
+        if(!respuesta.ok)throw new Error('Consulta no disponible');
+        const datos=await respuesta.json();if(version!==impactoSolicitud)return;
+        const texto=(tag,t)=>{const el=document.createElement(tag);el.textContent=t;return el;};
+        const filas=datos.resultados||[];
+        const total=estado=>filas.filter(r=>r.RESULTADO===estado).reduce((n,r)=>n+Number(r.LOTES||0),0);
+        const tarjetas=document.createElement('div');tarjetas.className='impacto-tarjetas';
+        for(const [label,n] of [['Donaciones publicadas',datos.publicadas],['Entregas realizadas',total('ENTREGADA')],['Entregas no realizadas',total('NO_REALIZADA')],['Discrepancias',total('DISCREPANCIA')],['Coordinaciones pendientes',total('PENDIENTE')],['Canceladas',total('CANCELADA')],['Organizaciones beneficiadas',datos.organizaciones],['Comensales registrados (alcance potencial)',datos.comensales]]){
+            const tarjeta=document.createElement('article');tarjeta.append(texto('span',label),texto('strong',Number(n)>0?Number(n).toLocaleString('es-PY'):''));tarjetas.append(tarjeta);
+        }
+        zona.replaceChildren(texto('h3','Impacto de las donaciones'),tarjetas);
+        const cantidades=filas.filter(r=>r.RESULTADO==='ENTREGADA'&&Number(r.CANTIDAD)>0);
+        if(cantidades.length)zona.append(texto('p','Alimentos entregados: '+cantidades.map(r=>`${Number(r.CANTIDAD).toLocaleString('es-PY')} ${r.UNIDAD||'unidad'}`).join(' · ')));
+        if(datos.historicas)zona.append(texto('small',`Retiros históricos sin doble confirmación: ${datos.historicas}. No incluidos en entregas verificadas.`));
+        zona.append(texto('small','Las entregas verificadas requieren confirmación de ambas partes. Los comensales registrados representan alcance potencial, no personas efectivamente atendidas.'));
+    }catch(e){if(version===impactoSolicitud)zona.textContent='No se pudo actualizar el impacto de las donaciones.';}
+}
+window.actualizarImpactoEntregas=actualizarImpactoEntregas;
+
 function renderizarInteligenciaSocial() {
 
     /* Garantiza que la estructura visual exista. */
     prepararDashboardInteligenciaSocial();
+    queueMicrotask(actualizarImpactoEntregas);
 
 
     const datos =
@@ -1998,12 +2027,20 @@ const validationResult =
     );
 
 
+// Solo el rol donante puede abrir o enviar formularios de oferta.
+function requiereDonante() {
+    if (!window.RescateAuth?.requireAuth()) return false;
+    if (window.RescateAuth.getUser()?.tipoCuenta === "DONANTE") return true;
+    alert("Esta acción corresponde únicamente a donantes.");
+    return false;
+}
+
 /* Abre formulario para una nueva donación. */
 abrirDonacionBtn?.addEventListener(
     "click",
     () => {
         // Para publicar una donación es obligatorio iniciar sesión.
-        if (!window.RescateAuth?.requireAuth()) {
+        if (!requiereDonante()) {
             return;
         }
 
@@ -2047,6 +2084,7 @@ abrirDonacionBtn?.addEventListener(
 
 
 function cerrarModalDonacion() {
+    window.RescateSeguimiento?.cancelarNueva?.();
     donationModal
         ?.classList
         .remove(
@@ -2191,7 +2229,7 @@ donationForm?.addEventListener(
         evento.preventDefault();
 
         // El backend necesita saber quién publica o modifica.
-        if (!window.RescateAuth?.requireAuth()) {
+        if (!requiereDonante()) {
             return;
         }
 
@@ -2525,6 +2563,7 @@ donationForm?.addEventListener(
 
         const esEdicion =
             donacionEnEdicion !== null;
+        let lotePublicado = null;
 
         try {
             if (esEdicion) {
@@ -2563,6 +2602,7 @@ donationForm?.addEventListener(
                 donaciones.push(
                     nuevaDonacion
                 );
+                lotePublicado = nuevaDonacion;
             }
 
             // LocalStorage queda como caché para reutilizar el render existente.
@@ -2665,6 +2705,7 @@ donationForm?.addEventListener(
 
         /* Actualiza métricas territoriales. */
         renderizarInteligenciaSocial();
+        if(lotePublicado) window.RescateSeguimiento?.trasPublicar(lotePublicado,validationResult);
     }
 );
 
@@ -2777,7 +2818,7 @@ function crearTarjetaDonacion(
         window.RescateAuth?.getUser?.();
 
     const esPropietario =
-        Boolean(usuarioActual)
+        usuarioActual?.tipoCuenta === "DONANTE"
         &&
         Number(donacion.ownerId) ===
         Number(usuarioActual.id);
@@ -2919,7 +2960,7 @@ function crearTarjetaDonacion(
         donacion.status ===
         "ACTIVA"
         &&
-        !esPropietario
+        !esPropietario && usuarioActual?.tipoCuenta !== "DONANTE"
     ) {
         const solicitar =
             document.createElement(
@@ -3000,7 +3041,7 @@ function crearTarjetaDonacion(
             "accion-donacion";
 
         retiro.textContent =
-            "Confirmar retiro";
+            "Coordinar / confirmar entrega";
 
         retiro.addEventListener(
             "click",
@@ -3046,12 +3087,22 @@ function crearTarjetaDonacion(
     }
 
 
+    // La organización solo ve el botón de coordinación de su propia reserva.
+    if (donacion.status === "RESERVADA" && usuarioActual?.tipoCuenta === "ORGANIZACION") {
+        const retiroMs = window.RescateEntregas?.reservaPropia(donacion.id);
+        if (retiroMs !== undefined) {
+            const b = document.createElement("button"); b.type = "button"; b.className = "accion-donacion";
+            b.textContent = retiroMs ? "Ver retiro / confirmar recepción" : "Voy a retirar";
+            b.onclick = () => window.RescateEntregas.abrir(); acciones.appendChild(b);
+        }
+    }
     /*
        El botón Editar aparece únicamente
        cuando estamos en el filtro "Todas".
     */
     if (
         filtroActual === "TODAS"
+        && esPropietario
         &&
         donacion.status !== "CANCELADA"
     ) {
@@ -3130,7 +3181,7 @@ function crearTarjetaDonacion(
 /* Edita una publicación activa. */
 function editarDonacion(id) {
     // Además del backend, el frontend evita abrir ediciones ajenas.
-    if (!window.RescateAuth?.requireAuth()) {
+    if (!requiereDonante()) {
         return;
     }
 
@@ -3240,7 +3291,7 @@ function editarDonacion(id) {
 
 /* Eliminar = cancelar, para conservar historial. */
 async function cancelarDonacion(id) {
-    if (!window.RescateAuth?.requireAuth()) {
+    if (!requiereDonante()) {
         return;
     }
 
@@ -3483,6 +3534,11 @@ function abrirReserva(id) {
         return;
     }
 
+    if (usuario?.tipoCuenta !== "ORGANIZACION") {
+        alert("Las reservas están disponibles para organizaciones.");
+        return;
+    }
+
     const campo =
         obtenerElemento(
             "reservationDonationId"
@@ -3493,6 +3549,8 @@ function abrirReserva(id) {
             id;
     }
 
+    const fechaRetiro = obtenerElemento("fechaRetiro");
+    if (fechaRetiro) { fechaRetiro.min = window.RescateEntregas.local(Date.now()).slice(0,10)+"T00:00"; fechaRetiro.value = ""; }
     reservationModal
         ?.classList
         .add(
@@ -3558,50 +3616,13 @@ reservationForm?.addEventListener(
             return;
         }
 
-        const nombre =
-            obtenerElemento(
-                "receiverName"
-            )?.value.trim() || "";
-
-        const responsable =
-            obtenerElemento(
-                "receiverResponsible"
-            )?.value.trim() || "";
-
-        const ciudad =
-            obtenerElemento(
-                "receiverCity"
-            )?.value.trim() || "";
-
-        if (
-            !nombre
-            ||
-            !responsable
-            ||
-            !ciudad
-        ) {
-            alert(
-                "Completá todos los datos del receptor."
-            );
-
-            return;
-        }
-
-        const datosReserva = {
-            receiverType:
-                obtenerElemento(
-                    "receiverType"
-                )?.value || "Otro",
-            receiverName:
-                nombre,
-            receiverResponsible:
-                responsable,
-            receiverCity:
-                ciudad
-        };
+        // Los datos del receptor se toman de la organización autenticada en Oracle.
+        let datosReserva;
+        try { datosReserva = { fechaRetiro: window.RescateEntregas.convertir(obtenerElemento("fechaRetiro").value) }; }
+        catch(error) { alert(error.message); return; }
 
         try {
-            // La reserva se guarda en SQLite y genera una notificación al propietario.
+            // La reserva se guarda en Oracle y genera una notificación al propietario.
             const respuesta =
                 await window.RescateAuth.api(
                     `/donaciones/${id}/reservar`,
@@ -3632,6 +3653,7 @@ reservationForm?.addEventListener(
         reservationForm.reset();
 
         cerrarReserva();
+        window.RescateEntregas?.actualizar();
 
         mostrarDonaciones();
         window.RescateAuth?.refreshNotifications?.();
@@ -3644,69 +3666,7 @@ reservationForm?.addEventListener(
 
 /* Confirma retiro del alimento. */
 async function confirmarRetiro(id) {
-    if (!window.RescateAuth?.requireAuth()) {
-        return;
-    }
-
-    const donaciones =
-        obtenerDonaciones();
-
-    const donacion =
-        donaciones.find(
-            (item) =>
-                String(item.id) === String(id)
-        );
-
-    if (
-        !donacion
-        ||
-        donacion.status !==
-        "RESERVADA"
-    ) {
-        alert(
-            "La donación debe estar reservada antes de confirmar el retiro."
-        );
-
-        return;
-    }
-
-    const confirmar =
-        window.confirm(
-            "¿Confirmar que esta donación fue retirada?"
-        );
-
-    if (!confirmar) {
-        return;
-    }
-
-    try {
-        const actualizada =
-            await window.RescateAuth.api(
-                `/donaciones/${id}/retirar`,
-                { method: "POST" }
-            );
-
-        const indice =
-            donaciones.findIndex(
-                (item) => String(item.id) === String(id)
-            );
-
-        if (indice >= 0) {
-            donaciones[indice] = actualizada;
-        }
-
-        guardarDonaciones(
-            donaciones
-        );
-    } catch (error) {
-        alert(error.message);
-        return;
-    }
-
-    mostrarDonaciones();
-
-    /* Actualiza métricas territoriales. */
-    renderizarInteligenciaSocial();
+    if (requiereDonante()) window.RescateEntregas.abrir();
 }
 
 
@@ -3766,10 +3726,37 @@ const helpResult =
     );
 
 
+// Solo organizaciones pueden ofrecer artículos; la oferta alimentaria conserva su propio permiso.
+function puedePublicarAyuda(usuario = window.RescateAuth?.getUser?.()) {
+    return usuario?.tipoCuenta === "ORGANIZACION";
+}
+function requierePublicarAyuda() {
+    if (!window.RescateAuth?.requireAuth()) return false;
+    return puedePublicarAyuda();
+}
+// Las nuevas ayudas pertenecen a su autor. Se conserva el acceso anterior a registros sin autor.
+function puedeGestionarAyuda(ayuda, usuario = window.RescateAuth?.getUser?.()) {
+    if (!ayuda || !puedePublicarAyuda(usuario)) return false;
+    if (ayuda.ownerId == null) return usuario.tipoCuenta === "DONANTE";
+    return String(ayuda.ownerId) === String(usuario.id) && ayuda.ownerRole === usuario.tipoCuenta;
+}
+// Evitar que la categoría de alimentos se use para eludir el módulo alimentario.
+function categoriaAyudaPermitida(categoria, usuario = window.RescateAuth?.getUser?.()) {
+    return puedePublicarAyuda(usuario) && !(usuario.tipoCuenta === "ORGANIZACION" && categoria === "Alimento no perecedero");
+}
+function configurarCategoriasAyuda() {
+    const select = obtenerElemento("helpCategory");
+    const opcion = select?.querySelector('option[value="Alimento no perecedero"]');
+    if (!opcion) return;
+    opcion.disabled = opcion.hidden = !categoriaAyudaPermitida(opcion.value);
+    if (opcion.disabled && select.value === opcion.value) select.selectedIndex = 0;
+}
+
 /* Abre formulario de ayuda no alimentaria. */
 abrirAyudarBtn?.addEventListener(
     "click",
     () => {
+        if (!requierePublicarAyuda()) return;
         odsDropdown
             ?.classList
             .remove(
@@ -3781,6 +3768,7 @@ abrirAyudarBtn?.addEventListener(
             null;
 
         helpForm?.reset();
+        configurarCategoriasAyuda();
        // Vuelve al inicio del formulario al abrir el modal
 const cuerpoAyuda =
     helpModal?.querySelector(
@@ -3845,6 +3833,7 @@ helpForm?.addEventListener(
     "submit",
     (evento) => {
         evento.preventDefault();
+        if (!requierePublicarAyuda()) return;
 
         const donorName =
             obtenerElemento(
@@ -3886,6 +3875,13 @@ helpForm?.addEventListener(
 
         const ayudas =
             obtenerAyudas();
+
+        const usuarioAyuda = window.RescateAuth.getUser();
+        const categoria = obtenerElemento("helpCategory")?.value || "Otro";
+        if (!categoriaAyudaPermitida(categoria, usuarioAyuda)) {
+            alert("Las organizaciones pueden ofrecer artículos, no alimentos.");
+            return;
+        }
 
         const datosAyuda = {
             donorType:
@@ -3951,6 +3947,10 @@ helpForm?.addEventListener(
                 return;
             }
 
+            if (!puedeGestionarAyuda(ayuda, usuarioAyuda)) {
+                alert("Solo podés gestionar tus propias ayudas.");
+                return;
+            }
             Object.assign(
                 ayuda,
                 datosAyuda
@@ -3973,6 +3973,8 @@ helpForm?.addEventListener(
                     ),
 
                 ...datosAyuda,
+                ownerId: usuarioAyuda.id,
+                ownerRole: usuarioAyuda.tipoCuenta,
 
                 status:
                     "ACTIVA",
@@ -4021,7 +4023,7 @@ helpForm?.addEventListener(
                     ${
                         ayudaEnEdicion
                             ? "Los cambios fueron guardados correctamente."
-                            : "Tu ayuda fue registrada correctamente y ya puede verse en <strong>Manos que suman</strong>."
+                            : "Tu ayuda fue registrada correctamente."
                     }
                 </p>
             `;
@@ -4703,6 +4705,7 @@ function crearTarjetaAyuda(
 
 
     if (
+        puedeGestionarAyuda(ayuda) &&
         ayuda.status ===
         "RESERVADA"
     ) {
@@ -4740,6 +4743,7 @@ function crearTarjetaAyuda(
        cuando estamos en el filtro "Todas".
     */
     if (
+        puedeGestionarAyuda(ayuda) &&
         filtroAyudaActual === "TODAS"
         &&
         ayuda.status !== "CANCELADA"
@@ -4778,6 +4782,7 @@ function crearTarjetaAyuda(
        el comportamiento que ya tenía.
     */
     if (
+        puedeGestionarAyuda(ayuda) &&
         ayuda.status !==
         "CANCELADA"
     ) {
@@ -4816,6 +4821,7 @@ function crearTarjetaAyuda(
 
 /* Edita una ayuda no alimentaria disponible. */
 function editarAyuda(id) {
+    if (!requierePublicarAyuda()) return;
 
     const ayudas =
         obtenerAyudas();
@@ -4826,6 +4832,11 @@ function editarAyuda(id) {
                 item.id === id
         );
 
+
+    if (!puedeGestionarAyuda(ayuda)) {
+        alert("Solo podés gestionar tus propias ayudas.");
+        return;
+    }
 
     if (
         !ayuda
@@ -4841,6 +4852,7 @@ function editarAyuda(id) {
     }
 
 
+    configurarCategoriasAyuda();
     ayudaEnEdicion =
         ayuda.id;
 
@@ -4930,6 +4942,7 @@ function editarAyuda(id) {
    se conserva el historial y se oculta del listado.
 */
 function eliminarAyuda(id) {
+    if (!requierePublicarAyuda()) return;
 
     const ayudas =
         obtenerAyudas();
@@ -4940,6 +4953,11 @@ function eliminarAyuda(id) {
                 item.id === id
         );
 
+
+    if (!puedeGestionarAyuda(ayuda)) {
+        alert("Solo podés gestionar tus propias ayudas.");
+        return;
+    }
 
     if (
         !ayuda
@@ -5289,6 +5307,7 @@ helpReservationForm?.addEventListener(
 
 /* Confirma retiro de ropa, calzado, etc. */
 function confirmarRetiroAyuda(id) {
+    if (!requierePublicarAyuda()) return;
     const ayudas =
         obtenerAyudas();
 
@@ -5297,6 +5316,11 @@ function confirmarRetiroAyuda(id) {
             (item) =>
                 item.id === id
         );
+
+    if (!puedeGestionarAyuda(ayuda)) {
+        alert("Solo podés gestionar tus propias ayudas.");
+        return;
+    }
 
     if (
         !ayuda
@@ -5336,385 +5360,6 @@ function confirmarRetiroAyuda(id) {
     /* Actualiza métricas territoriales. */
     renderizarInteligenciaSocial();
 }
-
-
-/* =========================================================
-   11. ECOVALOR
-========================================================= */
-
-const abrirEcoValorBtn =
-    obtenerElemento(
-        "abrirEcoValorBtn"
-    );
-
-const ecoValorModal =
-    obtenerElemento(
-        "ecoValorModal"
-    );
-
-const ecoValorBackdrop =
-    obtenerElemento(
-        "ecoValorBackdrop"
-    );
-
-const cerrarEcoValorBtn =
-    obtenerElemento(
-        "cerrarEcoValorBtn"
-    );
-
-const buscarEcoValorBtn =
-    obtenerElemento(
-        "buscarEcoValorBtn"
-    );
-
-const ecoValueResult =
-    obtenerElemento(
-        "ecoValueResult"
-    );
-
-const recyclingCenters =
-    obtenerElemento(
-        "recyclingCenters"
-    );
-
-
-/*
-   PRECIOS DE DEMOSTRACIÓN.
-   NO representan cotización real de mercado.
-   Más adelante deben venir de una fuente verificada.
-*/
-const preciosEcoValorDemo = {
-    "Latas de aluminio": 6000,
-    "Plástico PET": 1000,
-    "Plástico mixto": 500,
-    "Cartón": 800,
-    "Papel": 500,
-    "Hierro": 1500,
-    "Cobre": 50000,
-    "Bronce": 25000,
-    "Vidrio": 200,
-    "Otros metales": 2000
-};
-
-
-/*
-   Dejamos la lista preparada.
-   Agregá aquí recicladoras verificadas
-   cuando tengas sus datos reales.
-*/
-const centrosReciclaje = [];
-
-
-/* Abre EcoValor. */
-abrirEcoValorBtn?.addEventListener(
-    "click",
-    () => {
-        odsDropdown
-            ?.classList
-            .remove(
-                "activo"
-            );
-
-        ecoValorModal
-            ?.classList
-            .add(
-                "activo"
-            );
-    }
-);
-
-
-function cerrarEcoValor() {
-    ecoValorModal
-        ?.classList
-        .remove(
-            "activo"
-        );
-}
-
-
-cerrarEcoValorBtn?.addEventListener(
-    "click",
-    cerrarEcoValor
-);
-
-
-ecoValorBackdrop?.addEventListener(
-    "click",
-    cerrarEcoValor
-);
-
-
-/* Calcula valor y lugares. */
-function ejecutarEcoValor() {
-    const material =
-        obtenerElemento(
-            "recycleMaterial"
-        )?.value || "";
-
-    const kilos =
-        Number(
-            obtenerElemento(
-                "recycleKg"
-            )?.value || 0
-        );
-
-    const ciudad =
-        obtenerElemento(
-            "recycleCity"
-        )?.value.trim() || "";
-
-
-    if (
-        !material
-        ||
-        kilos <= 0
-        ||
-        !ciudad
-    ) {
-        alert(
-            "Elegí un material, ingresá los kilos y tu ciudad."
-        );
-
-        return;
-    }
-
-
-    const precioKg =
-        preciosEcoValorDemo[
-            material
-        ];
-
-
-    const valorEstimado =
-        Number.isFinite(
-            precioKg
-        )
-            ? kilos * precioKg
-            : null;
-
-
-    if (ecoValueResult) {
-        ecoValueResult.className =
-            "resultado-validacion revision";
-
-        ecoValueResult.innerHTML = `
-            <h3>
-                ${escaparHTML(material)}
-            </h3>
-
-            <p>
-                <strong>Cantidad:</strong>
-                ${escaparHTML(kilos)} kg
-            </p>
-
-            ${
-                Number.isFinite(precioKg)
-                    ? `
-                        <p>
-                            <strong>
-                                Precio DEMO:
-                            </strong>
-
-                            ${formatearGuaranies(precioKg)}
-                            / kg
-                        </p>
-
-                        <p>
-                            <strong>
-                                Valor estimado DEMO:
-                            </strong>
-
-                            ${formatearGuaranies(valorEstimado)}
-                        </p>
-                    `
-                    : `
-                        <p>
-                            Precio de referencia
-                            todavía no disponible.
-                        </p>
-                    `
-            }
-
-            <p>
-                <small>
-                    Los precios mostrados son valores de prueba
-                    del prototipo y no una cotización real.
-                    Deben reemplazarse por una fuente verificada.
-                </small>
-            </p>
-        `;
-    }
-
-
-    mostrarCentrosReciclaje(
-        material,
-        ciudad
-    );
-}
-
-
-/* Busca recicladoras registradas o Maps. */
-function mostrarCentrosReciclaje(
-    material,
-    ciudad
-) {
-    if (!recyclingCenters) {
-        return;
-    }
-
-    const ciudadNormalizada =
-        ciudad.toLowerCase();
-
-    const resultados =
-        centrosReciclaje.filter(
-            (centro) => {
-                const coincideCiudad =
-                    centro.ciudad
-                        .toLowerCase()
-                        .includes(
-                            ciudadNormalizada
-                        );
-
-                const aceptaMaterial =
-                    centro.materiales
-                        .some(
-                            (item) =>
-                                item
-                                    .toLowerCase()
-                                    .includes(
-                                        material
-                                            .toLowerCase()
-                                    )
-                        );
-
-                return (
-                    coincideCiudad
-                    &&
-                    aceptaMaterial
-                );
-            }
-        );
-
-
-    recyclingCenters.innerHTML =
-        "";
-
-
-    if (
-        resultados.length === 0
-    ) {
-        const consulta =
-            `recicladora compra ${material} ${ciudad} Paraguay`;
-
-        const url =
-            crearUrlGoogleMaps(
-                consulta
-            );
-
-        recyclingCenters.innerHTML = `
-            <div class="sin-donaciones">
-
-                <p>
-                    Todavía no tenemos compradores
-                    verificados para este material
-                    y ciudad.
-                </p>
-
-                <a
-                    href="${url}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="accion-donacion">
-
-                    Explorar compradores en Google Maps
-
-                </a>
-
-            </div>
-        `;
-
-        return;
-    }
-
-
-    resultados.forEach(
-        (centro) => {
-            const tarjeta =
-                document.createElement(
-                    "article"
-                );
-
-            tarjeta.className =
-                "donacion-publicada";
-
-            tarjeta.innerHTML = `
-                <span class="donacion-donante">
-                    RECICLAJE
-                </span>
-
-                <h3>
-                    ${escaparHTML(centro.nombre)}
-                </h3>
-
-                <div class="donacion-detalles">
-
-                    <p>
-                        <strong>Ciudad:</strong>
-                        ${escaparHTML(centro.ciudad)}
-                    </p>
-
-                    <p>
-                        <strong>Dirección:</strong>
-                        ${escaparHTML(centro.direccion)}
-                    </p>
-
-                    <p>
-                        <strong>Materiales:</strong>
-                        ${escaparHTML(
-                            centro.materiales.join(", ")
-                        )}
-                    </p>
-
-                </div>
-
-                <div class="acciones-donacion">
-
-                    <button
-                        type="button"
-                        class="accion-donacion">
-                        Cómo llegar
-                    </button>
-
-                </div>
-            `;
-
-            tarjeta
-                .querySelector(
-                    ".accion-donacion"
-                )
-                ?.addEventListener(
-                    "click",
-                    () => {
-                        abrirMapa(
-                            centro.direccion,
-                            centro.ciudad
-                        );
-                    }
-                );
-
-            recyclingCenters.appendChild(
-                tarjeta
-            );
-        }
-    );
-}
-
-
-buscarEcoValorBtn?.addEventListener(
-    "click",
-    ejecutarEcoValor
-);
 
 
 /* =========================================================
@@ -5816,7 +5461,6 @@ document.addEventListener(
         cerrarAyudaCerca();
         cerrarManosSuman();
         cerrarReservaAyuda();
-        cerrarEcoValor();
         cerrarOdsImpacto();
 
         odsDropdown
@@ -6010,240 +5654,6 @@ function cerrarModalEquipo() {
 
 
 /* =========================================================
-   2. ECOVALOR - AJUSTE VISUAL Y GOOGLE MAPS
-========================================================= */
-
-/*
-    Coloca el botón de Google Maps al lado de
-    "Dónde vender cerca", sin tocar tu HTML.
-*/
-function prepararEcoValorVisual() {
-
-    const contenedor =
-        obtenerElemento(
-            "recyclingCenters"
-        )
-        ?.closest(
-            ".observacion-donacion"
-        );
-
-    if (!contenedor) {
-        return;
-    }
-
-
-    const titulo =
-        contenedor.querySelector(
-            "h3"
-        );
-
-    if (!titulo) {
-        return;
-    }
-
-
-    let encabezado =
-        contenedor.querySelector(
-            ".eco-encabezado"
-        );
-
-
-    if (!encabezado) {
-
-        encabezado =
-            document.createElement(
-                "div"
-            );
-
-        encabezado.className =
-            "eco-encabezado";
-
-
-        titulo.parentNode.insertBefore(
-            encabezado,
-            titulo
-        );
-
-
-        encabezado.appendChild(
-            titulo
-        );
-    }
-
-
-    let enlace =
-        obtenerElemento(
-            "ecoMapsLink"
-        );
-
-
-    if (!enlace) {
-
-        enlace =
-            document.createElement(
-                "a"
-            );
-
-        enlace.id =
-            "ecoMapsLink";
-
-        enlace.className =
-            "accion-donacion eco-maps-btn";
-
-        enlace.target =
-            "_blank";
-
-        enlace.rel =
-            "noopener noreferrer";
-
-        enlace.textContent =
-            "Explorar compradores en Google Maps";
-
-
-        encabezado.appendChild(
-            enlace
-        );
-    }
-
-
-    /* Limpia el cuadro inicial de tu HTML. */
-    const lista =
-        obtenerElemento(
-            "recyclingCenters"
-        );
-
-    if (lista) {
-        lista.innerHTML =
-            "";
-    }
-
-
-    /* Búsqueda genérica hasta completar material y ciudad. */
-    enlace.href =
-        crearUrlGoogleMaps(
-            "recicladora compra materiales reciclables Paraguay"
-        );
-}
-
-
-/*
-    Después del cálculo actual:
-    - quitamos DEMO
-    - quitamos el texto de advertencia
-    - quitamos el cuadro gigante
-    - actualizamos Google Maps con material y ciudad
-*/
-function limpiarResultadoEcoValor() {
-
-    const material =
-        obtenerElemento(
-            "recycleMaterial"
-        )?.value || "";
-
-    const ciudad =
-        obtenerElemento(
-            "recycleCity"
-        )?.value.trim() || "";
-
-    const resultado =
-        obtenerElemento(
-            "ecoValueResult"
-        );
-
-
-    if (resultado) {
-
-        /* Quita la palabra DEMO de los títulos. */
-        resultado.innerHTML =
-            resultado.innerHTML
-                .replaceAll(
-                    "Precio DEMO:",
-                    "Precio por kg:"
-                )
-                .replaceAll(
-                    "Valor estimado DEMO:",
-                    "Valor estimado:"
-                );
-
-
-        /* Quita el texto pequeño de advertencia. */
-        resultado
-            .querySelectorAll(
-                "small"
-            )
-            .forEach(
-                (elemento) =>
-                    elemento
-                        .closest("p")
-                        ?.remove()
-            );
-    }
-
-
-    /* Elimina cualquier cuadro de "sin compradores". */
-    const lista =
-        obtenerElemento(
-            "recyclingCenters"
-        );
-
-    if (lista) {
-        lista.innerHTML =
-            "";
-    }
-
-
-    /* Actualiza el enlace de Maps según la búsqueda. */
-    const enlace =
-        obtenerElemento(
-            "ecoMapsLink"
-        );
-
-    if (
-        enlace
-        &&
-        material
-        &&
-        ciudad
-    ) {
-
-        enlace.href =
-            crearUrlGoogleMaps(
-                `recicladora compra ${material} ${ciudad} Paraguay`
-            );
-    }
-}
-
-
-/* Prepara EcoValor cuando se abre. */
-obtenerElemento(
-    "abrirEcoValorBtn"
-)
-?.addEventListener(
-    "click",
-    () => {
-
-        prepararEcoValorVisual();
-    }
-);
-
-
-/*
-    Este segundo listener se ejecuta después del listener
-    original de buscarEcoValorBtn que ya tenés.
-*/
-obtenerElemento(
-    "buscarEcoValorBtn"
-)
-?.addEventListener(
-    "click",
-    () => {
-
-        limpiarResultadoEcoValor();
-    }
-);
-
-
-/* =========================================================
    3. CERRAR EQUIPO CON ESC
 ========================================================= */
 
@@ -6265,8 +5675,6 @@ document.addEventListener(
    4. PREPARACIÓN INICIAL
 ========================================================= */
 
-/* Deja EcoValor limpio desde el inicio. */
-prepararEcoValorVisual();
 
 
 /* =========================================================
@@ -6399,3 +5807,13 @@ function agregarBotonesVolverAtras() {
 
 /* Crea los botones cuando todo el HTML ya está disponible. */
 agregarBotonesVolverAtras();
+
+// Limpiar formularios de oferta cuando cambia la sesión.
+document.addEventListener("rescate:sesion", (e) => {
+    if (e.detail?.tipoCuenta !== "DONANTE") cerrarModalDonacion();
+    // Nunca conservar un formulario de ayuda abierto al cambiar de cuenta.
+    cerrarAyudar();
+    ayudaEnEdicion = null;
+    configurarCategoriasAyuda();
+    mostrarAyudasDisponibles();
+});
